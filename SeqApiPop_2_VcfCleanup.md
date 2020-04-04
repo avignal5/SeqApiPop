@@ -54,7 +54,7 @@ In bold (FS, SOR, MQ...): annotations that were used in used in filters. Other a
 * SNPs with more than 3 alleles were filtered out (**variable limit_allele=3**)
 * As we sequenced haploid drones, SNPs with a high proportion of heterozygote calls (**variable limit_het=0.01**) were filtered out. Some heterozygote calls (< 1%) had to be retained to avoid loosing too many markers. These were probably genotypiong errors and were set to missing.
 
-## 4. SCRIPTS
+## 4. SCRIPTS for filtering
 ### 4.1. Calling script: run_vcfcleanup.sh
 * All editing of paths and values for filters are done in this script
 #### 4.1.1. General variables to edit: paths, number of authorised alleles
@@ -210,3 +210,95 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
   - Will call filter_list.r
     - Will remove any SNP marker having > 3 alleles or one of the alleles being an indel (noted '*' in the ALT field of the vcf)
   - Filters will be run, producing intermediate vcf files and the number of SNPs will be counted counted for each vcf file.
+
+## 5. results:
+* See the Venn diagrams for the selection of markers based on filtering criteria.
+* The intersect in Venn_1 gives 10,057,214 SNPs, selected on strand biases and mapping quality metrics, with markers kept if all true:
+  - SOR < 4
+  - FS < 61
+  - MQ > 39
+* The intersect in Venn_2 gives 8,175,852 SNPs, selected on global genotyping quality metrics in addition to the previous selection. Markers kept:
+  - int1 (the selection from Venn_1)
+  - QUAL > 200
+  - QD > 20
+* The final intersect in Venn_3 gives 7,023,976 SNPs, selected on individual genotyping metrics in addition to the previous selection
+  - int2 (the selection from Venn_2)
+  - hererozygote calls < 1% : as we sequenced haploid drones, heterozygote calls represent genotyping errors or duplicated sequences. Note: all remaining heterozygote calls are set to missing.
+  - missing genotypes < 5%
+  - SNPs with < 20% genotypes having individual GQ < 10.
+  - allele number < 4
+* The final vcf file has just over 7 million SNPs : 7,023,976 in total.
+
+**The final vcf file has just over 7 million SNPs : 7,023,976 in total.**
+
+**However, although SNPs with more than 5% of missing data were filtered out, some markers may have more than 5% missing data due to the hetozygote calls that were set to missing.**
+
+**Markers can have up to 3 alleles**
+
+## 6. Prepare bed, bim, fam files for plink, admixture, ...
+
+### 6.1. change chromosome names to numbers
+* The chromosome names have to be numbers
+* Script to generate sed commands for all chromosomes: substForPlinkWrite.bash
+```bash
+#!/bin/bash
+
+#substForPlinkWrite.bash
+
+printf "#!/bin/bash\n\n"
+
+printf "cp /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses
+/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf\n\n"
+
+j=0
+for i in `cut -f1 /home/gencel/vignal/save/Genomes/Abeille/HAv3_1_indexes/HAv3_1_Chromosomes.list`
+do
+j=$((j+1))
+printf "sed -i \'s/${i}/${j}/g\' /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf\n"
+done
+```
+
+```bash
+substForPlinkWrite.bash > substForPlink.bash
+```
+
+```bash
+sbatch substForPlink.bash
+```
+
+### 6.2 Prepare bed, bim, fam files
+
+* --geno filters out all variants with missing call rates exceeding the provided value (default 0.1) to be removed
+* --mind does the same for samples.
+
+* /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/convertToBed.bash
+
+```bash
+#! /bin/bash
+
+#convertToBed.bash
+
+module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
+
+VCFin=/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf
+VCFout=/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink
+plink --vcf ${VCFin} \
+  --keep-allele-order \
+  --a2-allele ${VCFin} 4 3 '#' \
+  --allow-no-sex \
+  --allow-extra-chr \
+  --chr-set 16 \
+  --set-missing-var-ids @:#[HAV3.1]\$1\$2 \
+  --chr 1-16 \
+  --mind 0.2 \
+  --out ${VCFout} \
+  --make-bed \
+  --missing
+```
+
+* Essential from MetaGenotypesCalled870_raw_snps_allfilter_plink.log
+	* 7023689 variants loaded from .bim file.
+		* There were a tolal of 7023976 after the filters, but the mitochondrial DNA (287 SNPs) was removed here.
+	* 1 sample removed due to missing genotype data (--mind 0.5). See MetaGenotypesCalled870_raw_snps_allfilter_plink.irem
+	* Total genotyping rate in remaining samples is 0.99126.
+	* 7023689 variants and 869 samples pass filters and QC.
