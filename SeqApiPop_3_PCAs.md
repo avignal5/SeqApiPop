@@ -40,21 +40,26 @@ plink --vcf ${VCFin} \
 * 11075 variants removed due to missing genotype data (--geno)
 * 15 samples removed due to missing genotype data (--mind).
 
-AOC4    AOC4
-BR12    BR12
-BR1A    BR1A
-ESP9    ESP9
-JFM21   JFM21
-JFM24   JFM24
-JFM3    JFM3
-JFM5    JFM5
-KF21    KF21
-OUE8    OUE8
-PM1     PM1
-SavB1   SavB1
-SavB3   SavB3
-XC3     XC3
-XC4     XC4
+**From the *.imiss plink file:**
+
+|ID | N_MISS | N_GENO | F_MISS|
+|:---|---:|---:|---:|
+|AOC4 | 1270404 | 7023689 | 0.1809|
+|BR12 | 1269182 | 7023689 | 0.1807|
+|BR1A | 1253619 | 7023689 | 0.1785|
+|ESP9 | 6208279 | 7023689 | 0.8839|
+|JFM21 | 725846 | 7023689 | 0.1033|
+|JFM24 | 817509 | 7023689 | 0.1164|
+|JFM3 | 875208 | 7023689 | 0.1246|
+|JFM5 | 830181 | 7023689 | 0.1182|
+|KF21 | 722607 | 7023689 | 0.1029|
+|OUE8 | 831427 | 7023689 | 0.1184|
+|PM1 | 969888 | 7023689 | 0.1381|
+|SavB1 | 823422 | 7023689 | 0.1172|
+|SavB3 | 706024 | 7023689 | 0.1005|
+|XC3 | 821334 | 7023689 | 0.1169|
+|XC4 | 747325 | 7023689 | 0.1064|
+
 
 
 
@@ -75,7 +80,7 @@ plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
   --out ${NAME} \
   --indep-pairwise 1000000 100000 0.9
 
-plink --bfile MetaGenotypesCalled870_raw_snps_allfilter_plink \
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
     --out ${NAME}_pruned \
 	--extract ${NAME}.prune.in \
 	--make-bed
@@ -100,7 +105,7 @@ plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
   --out ${NAME} \
   --indep-pairwise 1000000 100000 0.5
 
-plink --bfile MetaGenotypesCalled870_raw_snps_allfilter_plink \
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
     --out ${NAME}_pruned \
 	--extract ${NAME}.prune.in \
 	--make-bed
@@ -125,7 +130,7 @@ plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
   --out ${NAME} \
   --indep-pairwise 1000000 100000 0.3
 
-plink --bfile MetaGenotypesCalled870_raw_snps_allfilter_plink \
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
     --out ${NAME}_pruned \
 	--extract ${NAME}.prune.in \
 	--make-bed
@@ -150,7 +155,7 @@ plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
   --out ${NAME} \
   --indep-pairwise 1000000 100000 0.2
 
-plink --bfile MetaGenotypesCalled870_raw_snps_allfilter_plink \
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
     --out ${NAME}_pruned \
 	--extract ${NAME}.prune.in \
 	--make-bed
@@ -175,7 +180,7 @@ plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
   --out ${NAME} \
   --indep-pairwise 1000000 100000 0.15
 
-plink --bfile MetaGenotypesCalled870_raw_snps_allfilter_plink \
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
     --out ${NAME}_pruned \
 	--extract ${NAME}.prune.in \
 	--make-bed
@@ -200,7 +205,7 @@ plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
   --out ${NAME} \
   --indep-pairwise 1000000 100000 0.1
 
-plink --bfile MetaGenotypesCalled870_raw_snps_allfilter_plink \
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
     --out ${NAME}_pruned \
 	--extract ${NAME}.prune.in \
 	--make-bed
@@ -225,7 +230,7 @@ plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
   --out ${NAME} \
   --indep-pairwise 1000000 100000 0.05
 
-plink --bfile MetaGenotypesCalled870_raw_snps_allfilter_plink \
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
     --out ${NAME}_pruned \
 	--extract ${NAME}.prune.in \
 	--make-bed
