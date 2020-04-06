@@ -40,7 +40,7 @@ plink --vcf ${VCFin} \
 * 11075 variants removed due to missing genotype data (--geno)
 * 15 samples removed due to missing genotype data (--mind).
 
-**From the \*.imiss plink file:**
+**Samples removed: frequency of missing genotypes from the \*.imiss plink file:**
 
 |ID | N_MISS | N_GENO | F_MISS|
 |:---|---:|---:|---:|
@@ -61,9 +61,23 @@ plink --vcf ${VCFin} \
 |XC4 | 747325 | 7023689 | 0.1064|
 
 
+### PCA on complete dataset
 
+```bash
+#! /bin/bash
 
-### LD filters : Use a window of the size of the largest chromosome ~ 1,000,000 SNPs
+#7millionSNPs.sh
+
+module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
+
+NAME=7millionSNPs
+
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
+  --out PCA_${NAME} \
+  --pca
+```
+
+### PCAs after LD filters : Use a window of the size of the largest chromosome ~ 1,000,000 SNPs
 
 #### LD = 0.9
 
