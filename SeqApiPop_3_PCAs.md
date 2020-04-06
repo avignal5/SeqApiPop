@@ -14,7 +14,7 @@ File with the 7023689  variants:
 
 More stringent on missing data in individuals:
 
-
+```bash
 #! /bin/bash
 
 #convertToBed.bash
@@ -36,6 +36,7 @@ plink --vcf ${VCFin} \
   --out ${VCFout} \
   --make-bed \
   --missing
+```
 
 * 11075 variants removed due to missing genotype data (--geno)
 * 15 samples removed due to missing genotype data (--mind).
