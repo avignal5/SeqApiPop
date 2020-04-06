@@ -40,7 +40,7 @@ plink --vcf ${VCFin} \
 * 11075 variants removed due to missing genotype data (--geno)
 * 15 samples removed due to missing genotype data (--mind).
 
-**From the *.imiss plink file:**
+**From the \*.imiss plink file:**
 
 |ID | N_MISS | N_GENO | F_MISS|
 |:---|---:|---:|---:|
