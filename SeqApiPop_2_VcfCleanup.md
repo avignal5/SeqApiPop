@@ -235,6 +235,28 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
 
 **Markers can have up to 3 alleles**
 
+| Accession   |Chr| Nb. SNP |
+|:----------- |---:|-----:|
+| NC_001566.1 |MT|    287 |
+| NC_037638.1 | 1 |   913023 |
+| NC_037639.1 | 2 |    534733 |
+| NC_037640.1 | 3 |    442882 |
+| NC_037641.1 | 4 |    440141 |
+| NC_037642.1 | 5 |    462122 |
+| NC_037643.1 | 6 |    577596 |
+| NC_037644.1 | 7 |    463575 |
+| NC_037645.1 | 8 |    397891 |
+| NC_037646.1 | 9 |    378566 |
+| NC_037647.1 | 10|   355296 |
+| NC_037648.1 | 11|    441395 |
+| NC_037649.1 | 12|    388488 |
+| NC_037650.1 | 13|    378466 |
+| NC_037651.1 | 14|    330298 |
+| NC_037652.1 | 15|    285750 |
+| NC_037653.1 | 16|    233467 |
+| Sum   | Sum |  7023976 |
+
+
 ## 6. Prepare bed, bim, fam files for plink, admixture, ...
 
 ### 6.1. change chromosome names to numbers
