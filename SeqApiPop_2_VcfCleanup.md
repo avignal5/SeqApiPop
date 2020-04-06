@@ -25,14 +25,17 @@
 Variants were filtered on the INFO field and on samples-level annotations of the vcf. As we sequenced haploid drones, SNPs with a high proportion of heterozygote calls were also filtered out. Finally, we removed the SNP markers having an additional allele noted * (InDel).
 
 ## 2. Filters on annotations in the vcf file
-In bold (FS, SOR, MQ...): annotations that were used in used in filters. Other annotations (DP, AC, AF) are indicated for reference.
+In bold (FS, SOR, MQ...): annotations that were analysed (figures with distribution of values), for consideration of use in the filters. Other annotations (DP, AC, AF) are indicated for reference.
+
+MQRankSum and ReadPosRankSum (italics): were finally not used in the filters, as suggested by their distribution of values (see histograms and ECDF in Figures_S1_VcfCleanup).
+
 ### 2.1. In the INFO field: SNP quality estimations
 * **FS** = FisherStrand; phred-scaled probability that there is strand bias at the site.
 * **SOR** = StrandOddsRatio: another way to estimate strand bias using a test similar to the symmetric odds ratio test.
 * **MQ** = RMSMappingQuality: root mean square mapping quality over all the reads at the site.
 
-* **MQRankSum** = MappingQualityRankSumTest: compares the mapping qualities of the reads supporting the reference allele and the alternate allele.
-* **ReadPosRankSum** = ReadPosRankSumTest: compares whether the positions of the reference and alternate alleles are different within the reads.
+* ***MQRankSum*** = MappingQualityRankSumTest: compares the mapping qualities of the reads supporting the reference allele and the alternate allele.
+* ***ReadPosRankSum*** = ReadPosRankSumTest: compares whether the positions of the reference and alternate alleles are different within the reads.
 
 * **QUAL** = Phred-scaled quality score for the assertion made in ALT. The more samples have the ATL allele, the higher the QUAL score
 * DP = In the INFO field: combined depth across samples
@@ -212,7 +215,7 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
   - Filters will be run, producing intermediate vcf files and the number of SNPs will be counted counted for each vcf file.
 
 ## 5. results:
-* See the Venn diagrams for the selection of markers based on filtering criteria.
+* See the Venn diagrams for the selection of markers based on filtering criteria in Figures_S1_VcfCleanup.
 * The intersect in Venn_1 gives 10,057,214 SNPs, selected on strand biases and mapping quality metrics, with markers kept if all true:
   - SOR < 4
   - FS < 61
@@ -321,6 +324,6 @@ plink --vcf ${VCFin} \
 * Essential from MetaGenotypesCalled870_raw_snps_allfilter_plink.log
 	* 7023689 variants loaded from .bim file.
 		* There were a tolal of 7023976 after the filters, but the mitochondrial DNA (287 SNPs) was removed here.
-	* 1 sample removed due to missing genotype data (--mind 0.5). See MetaGenotypesCalled870_raw_snps_allfilter_plink.irem
+	* 1 sample removed due to missing genotype data (--mind 0.5). See MetaGenotypesCalled870_raw_snps_allfilter_plink.irem => ESP9.
 	* Total genotyping rate in remaining samples is 0.99126.
 	* 7023689 variants and 869 samples pass filters and QC.
