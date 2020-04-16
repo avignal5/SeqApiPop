@@ -1,6 +1,6 @@
 # SeqApiPop analyses: PCA
 
-## Filters:
+## Preleminary filters on missing genotype data for SNPs and for samples:
 
 * --maf filters out all variants with minor allele frequency below the provided threshold (default 0.01)
 * --geno filters out all variants with missing call rates exceeding the provided value (default 0.1) to be removed
@@ -60,6 +60,9 @@ plink --vcf ${VCFin} \
 |SavB3 | 706024 | 7023689 | 0.1005|
 |XC3 | 821334 | 7023689 | 0.1169|
 |XC4 | 747325 | 7023689 | 0.1064|
+
+
+## Filters on linkage desiquilibrium (LD), using different LD values and windows in plink
 
 
 ### PCA on complete dataset
@@ -254,3 +257,14 @@ plink --bfile ${NAME}_pruned \
   --out PCA_${NAME} \
   --pca
 ```
+
+### The same LD values were also run with smaller size windows
+* 1 Mb
+* 500 kb
+* 100 kb
+* 50 kb
+* 10 kb
+
+### Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.
+
+![image](/images/Plot3.png)
