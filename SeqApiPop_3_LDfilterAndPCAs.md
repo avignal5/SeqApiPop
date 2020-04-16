@@ -271,7 +271,7 @@ plink --bfile ${NAME}_pruned \
 
 ### Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks
 
-* See Figures_3_LD_PCA/PlotAllChrsCompareWindFAltColorsBin05.pdf for the whole genomes
+* See ![SNP numbers along the genome after LD pruning](Figures_3_LD_PCA/PlotAllChrsCompareWindFAltColorsBin05.pdf) for the whole genomes
 * And a selection of 4 haplotype haploBlocks
 
 ![image](/Figures_3_LD_PCA/PlotChrs2_0_3_MbB.pdf)
