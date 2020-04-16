@@ -1,4 +1,4 @@
-# SeqApiPop analyses: PCA
+# SeqApiPop analyses: filtering on LD and PCA
 
 ## Preleminary filters on missing genotype data for SNPs and for samples:
 
@@ -267,4 +267,14 @@ plink --bfile ${NAME}_pruned \
 
 ### Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.
 
-![image](/images/Image1.png)
+![image](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.pdf)
+
+### Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks
+
+* See Figures_3_LD_PCA/PlotAllChrsCompareWindFAltColorsBin05.pdf for the whole genomes
+* And a selection of 4 haplotype haploBlocks
+
+![image](/Figures_3_LD_PCA/PlotChrs2_0_3_MbB.pdf)
+![image](/Figures_3_LD_PCA/PlotChrs4_0_3.5_MbB.pdf)
+![image](/Figures_3_LD_PCA/PlotChrs7_3_8_MbB.pdf)
+![image](/Figures_3_LD_PCA/PlotChrs11_3_8_MbB.pdf)
