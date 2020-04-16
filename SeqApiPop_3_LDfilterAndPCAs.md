@@ -1,6 +1,48 @@
 # SeqApiPop analyses: filtering on LD and PCA
 
-## Defining haplotype blocks
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [SeqApiPop analyses: filtering on LD and PCA](#seqapipop-analyses-filtering-on-ld-and-pca)
+	- [1. Defining haplotype blocks](#1-defining-haplotype-blocks)
+- [! /bin/bash](#-binbash)
+- [haplotypeBlocks5000.sh](#haplotypeblocks5000sh)
+		- [1.1 Obtaining 5 first columns for further Analysis](#11-obtaining-5-first-columns-for-further-analysis)
+	- [2. Preleminary filters on missing genotype data for SNPs and for samples:](#2-preleminary-filters-on-missing-genotype-data-for-snps-and-for-samples)
+- [! /bin/bash](#-binbash)
+- [convertToBed.bash](#converttobedbash)
+	- [3. Filters on linkage desiquilibrium (LD), using different LD values and windows in plink and PCA](#3-filters-on-linkage-desiquilibrium-ld-using-different-ld-values-and-windows-in-plink-and-pca)
+		- [3.1. PCA on complete dataset](#31-pca-on-complete-dataset)
+- [! /bin/bash](#-binbash)
+- [7millionSNPs.sh](#7millionsnpssh)
+		- [3.2. PCAs after LD filters : Use a window of the size of the largest chromosome ~ 1,000,000 SNPs](#32-pcas-after-ld-filters-use-a-window-of-the-size-of-the-largest-chromosome-1000000-snps)
+			- [3.2.1. LD = 0.9](#321-ld-09)
+- [! /bin/bash](#-binbash)
+- [LD09_Chromosomes.sh](#ld09chromosomessh)
+			- [3.2.2. LD = 0.5](#322-ld-05)
+- [! /bin/bash](#-binbash)
+- [LD05_Chromosomes.sh](#ld05chromosomessh)
+			- [3.2.3. LD = 0.3](#323-ld-03)
+- [! /bin/bash](#-binbash)
+- [LD03_Chromosomes.sh](#ld03chromosomessh)
+			- [3.2.4. LD = 0.2](#324-ld-02)
+- [! /bin/bash](#-binbash)
+- [LD02_Chromosomes.sh](#ld02chromosomessh)
+			- [3.2.5. LD = 0.15](#325-ld-015)
+- [! /bin/bash](#-binbash)
+- [LD015_Chromosomes.sh](#ld015chromosomessh)
+			- [3.2.6. LD = 0.1](#326-ld-01)
+- [! /bin/bash](#-binbash)
+- [LD01_Chromosomes.sh](#ld01chromosomessh)
+			- [3.2.7. LD = 0.05](#327-ld-005)
+- [! /bin/bash](#-binbash)
+- [LD005_Chromosomes.sh](#ld005chromosomessh)
+		- [The same LD values were also run with smaller size windows](#the-same-ld-values-were-also-run-with-smaller-size-windows)
+		- [Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.](#figure-showing-the-number-of-snps-selected-for-different-combinations-of-ld-thresholds-and-window-sizes)
+		- [Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks](#figures-showing-the-influence-of-ld-thresholds-and-window-sizes-on-the-selection-of-snps-in-haplotype-blocks)
+
+<!-- /TOC -->
+
+## 1. Defining haplotype blocks
 
 ```bash
 #! /bin/bash
@@ -17,12 +59,12 @@ plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
   --blocks-max-kb 5000
 ```
 
-### Obtaining 5 first columns for further Analysis
+### 1.1 Obtaining 5 first columns for further Analysis
 ```bash
  awk '{print $1,$2,$3,$4,$5}' haplotypeBlocks5000.blocks.det > haplotypeBlocks5000.blocks.cols
 ```
 
-## Preleminary filters on missing genotype data for SNPs and for samples:
+## 2. Preleminary filters on missing genotype data for SNPs and for samples:
 
 * --maf filters out all variants with minor allele frequency below the provided threshold (default 0.01)
 * --geno filters out all variants with missing call rates exceeding the provided value (default 0.1) to be removed
@@ -84,10 +126,10 @@ plink --vcf ${VCFin} \
 |XC4 | 747325 | 7023689 | 0.1064|
 
 
-## Filters on linkage desiquilibrium (LD), using different LD values and windows in plink
+## 3. Filters on linkage desiquilibrium (LD), using different LD values and windows in plink and PCA
 
 
-### PCA on complete dataset
+### 3.1. PCA on complete dataset
 
 ```bash
 #! /bin/bash
@@ -103,9 +145,9 @@ plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
   --pca
 ```
 
-### PCAs after LD filters : Use a window of the size of the largest chromosome ~ 1,000,000 SNPs
+### 3.2. PCAs after LD filters : Use a window of the size of the largest chromosome ~ 1,000,000 SNPs
 
-#### LD = 0.9
+#### 3.2.1. LD = 0.9
 
 ```bash
 #! /bin/bash
@@ -130,7 +172,7 @@ plink --bfile ${NAME}_pruned \
   --pca
 ```
 
-#### LD = 0.5
+#### 3.2.2. LD = 0.5
 
 ```bash
 #! /bin/bash
@@ -155,7 +197,7 @@ plink --bfile ${NAME}_pruned \
   --pca
 ```
 
-#### LD = 0.3
+#### 3.2.3. LD = 0.3
 
 ```bash
 #! /bin/bash
@@ -180,7 +222,7 @@ plink --bfile ${NAME}_pruned \
   --pca
 ```
 
-#### LD = 0.2
+#### 3.2.4. LD = 0.2
 
 ```bash
 #! /bin/bash
@@ -205,7 +247,7 @@ plink --bfile ${NAME}_pruned \
   --pca
 ```
 
-#### LD = 0.15
+#### 3.2.5. LD = 0.15
 
 ```bash
 #! /bin/bash
@@ -230,7 +272,7 @@ plink --bfile ${NAME}_pruned \
   --pca
 ```
 
-#### LD = 0.1
+#### 3.2.6. LD = 0.1
 
 ```bash
 #! /bin/bash
@@ -255,7 +297,7 @@ plink --bfile ${NAME}_pruned \
   --pca
 ```
 
-#### LD = 0.05
+#### 3.2.7. LD = 0.05
 
 ```bash
 #! /bin/bash
