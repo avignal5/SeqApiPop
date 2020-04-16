@@ -267,4 +267,4 @@ plink --bfile ${NAME}_pruned \
 
 ### Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.
 
-![image](/images/Plot3.png)
+![image](/images/Image1.png)
