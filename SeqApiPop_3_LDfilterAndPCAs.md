@@ -299,10 +299,10 @@ plink --bfile ${NAME}_pruned \
 * And a selection of 4 haplotype haploBlocks
   - Figures generated with PlotHaplosLDChrRegion.py
 
-![Chromosome 2](/Figures_3_LD_PCA/PlotChrs2_0_3_Mb.pdf)
-![Chromosome 4](/Figures_3_LD_PCA/PlotChrs4_0_3_Mb.pdf)
-![Chromosome 7](/Figures_3_LD_PCA/PlotChrs7_3_8_Mb.pdf)
-![Chromosome 11](/Figures_3_LD_PCA/PlotChrs11_3_8_Mb.pdf)
+![Chromosome 2](/Figures_3_LDfilterAndPCA/PlotChrs2_0_3_Mb.pdf)
+![Chromosome 4](/Figures_3_LDfilterAndPCA/PlotChrs4_0_3_Mb.pdf)
+![Chromosome 7](/Figures_3_LDfilterAndPCA/PlotChrs7_3_8_Mb.pdf)
+![Chromosome 11](/Figures_3_LDfilterAndPCA/PlotChrs11_3_8_Mb.pdf)
 
 * SNP counts in large haplotypeblocks are lower.
 * Larger window sizes for LD pruning eliminate more SNPs in large haplotype blocks
