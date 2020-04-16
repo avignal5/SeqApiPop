@@ -275,7 +275,7 @@ plink --bfile ${NAME}_pruned \
 * See ![SNP numbers along the genome after LD pruning](Figures_3_LD_PCA/PlotAllChrsCompareWindFAltColorsBin05.pdf) for the whole genomes
 * And a selection of 4 haplotype haploBlocks
 
-![Chromosome 2](/Figures_3_LD_PCA/PlotChrs2_0_3_MbB.pdf)
-![Chromosome 4](/Figures_3_LD_PCA/PlotChrs4_0_3.5_MbB.pdf)
-![Chromosome 7](/Figures_3_LD_PCA/PlotChrs7_3_8_MbB.pdf)
-![Chromosome 11](/Figures_3_LD_PCA/PlotChrs11_3_8_MbB.pdf)
+![Chromosome 2](/Figures_3_LD_PCA/PlotChrs2_0_3_Mb.pdf)
+![Chromosome 4](/Figures_3_LD_PCA/PlotChrs4_0_3.5_Mb.pdf)
+![Chromosome 7](/Figures_3_LD_PCA/PlotChrs7_3_8_Mb.pdf)
+![Chromosome 11](/Figures_3_LD_PCA/PlotChrs11_3_8_Mb.pdf)
