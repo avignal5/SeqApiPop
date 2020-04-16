@@ -267,15 +267,20 @@ plink --bfile ${NAME}_pruned \
 
 ### Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.
 
-![image](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.png)
+![SNPs selected by LD values and window sizes.](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.png)
 ![downloadable pdf version](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.pdf)
 
 ### Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks
-
-* See ![SNP numbers along the genome after LD pruning](Figures_3_LD_PCA/PlotAllChrsCompareWindFAltColorsBin05.pdf) for the whole genomes
+* Areas shaded in grey are the haplotype blocks > 100 as detected by plink.
+* Whole genome: ![SNP numbers along the genome after LD pruning.](Figures_3_LD_PCA/PlotAllChrsCompareWindBin05.pdf)
+  - Figure generated with PlotHaplosLDselCompWind.py
 * And a selection of 4 haplotype haploBlocks
+  - Figures generated with PlotHaplosLDChrRegion.py
 
 ![Chromosome 2](/Figures_3_LD_PCA/PlotChrs2_0_3_Mb.pdf)
 ![Chromosome 4](/Figures_3_LD_PCA/PlotChrs4_0_3_Mb.pdf)
 ![Chromosome 7](/Figures_3_LD_PCA/PlotChrs7_3_8_Mb.pdf)
 ![Chromosome 11](/Figures_3_LD_PCA/PlotChrs11_3_8_Mb.pdf)
+
+* SNP counts in haplotypeblocks are lower.
+* Larger window sizes for LD pruning eliminate more SNPs in haplotype blocks
