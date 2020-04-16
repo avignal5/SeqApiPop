@@ -15,9 +15,10 @@
 		- [3.2.5. LD = 0.15](#325-ld-015)
 		- [3.2.6. LD = 0.1](#326-ld-01)
 		- [3.2.7. LD = 0.05](#327-ld-005)
-	- [The same LD values were also run with smaller size windows](#the-same-ld-values-were-also-run-with-smaller-size-windows)
-	- [Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.](#figure-showing-the-number-of-snps-selected-for-different-combinations-of-ld-thresholds-and-window-sizes)
-	- [Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks](#figures-showing-the-influence-of-ld-thresholds-and-window-sizes-on-the-selection-of-snps-in-haplotype-blocks)
+	- [3.3. The same LD values were also run with smaller size windows](#33-the-same-ld-values-were-also-run-with-smaller-size-windows)
+		- [3.3.1. For instance 1 Mb window and LD = 0.05:](#331-for-instance-1-mb-window-and-ld-005)
+	- [3.4. Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.](#34-figure-showing-the-number-of-snps-selected-for-different-combinations-of-ld-thresholds-and-window-sizes)
+	- [3.5. Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks](#35-figures-showing-the-influence-of-ld-thresholds-and-window-sizes-on-the-selection-of-snps-in-haplotype-blocks)
 
 <!-- /TOC -->
 
@@ -301,19 +302,44 @@ plink --bfile ${NAME}_pruned \
   --pca
 ```
 
-### The same LD values were also run with smaller size windows
+### 3.3. The same LD values were also run with smaller size windows
 * 1 Mb
 * 500 kb
 * 100 kb
 * 50 kb
 * 10 kb
 
-### Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.
+#### 3.3.1. For instance 1 Mb window and LD = 0.05:
+
+```bash
+#! /bin/bash
+
+#LD005_Chromosomes.sh
+
+module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
+
+NAME=LD005_Chromosomes
+
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
+  --out ${NAME} \
+  --indep-pairwise 1000 kb 100 0.05
+
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
+    --out ${NAME}_pruned \
+        --extract ${NAME}.prune.in \
+        --make-bed
+
+plink --bfile ${NAME}_pruned \
+  --out PCA_${NAME} \
+  --pca
+```
+
+### 3.4. Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.
 
 ![SNPs selected by LD values and window sizes.](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.png)
 ![downloadable pdf version](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.pdf)
 
-### Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks
+### 3.5. Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks
 * Areas shaded in grey are the haplotype blocks > 100 as detected by plink.
 * Whole genome: ![SNP numbers along the genome after LD pruning.](Figures_3_LD_PCA/PlotAllChrsCompareWindBin05.pdf)
   - Figure generated with PlotHaplosLDselCompWind.py
