@@ -1,5 +1,27 @@
 # SeqApiPop analyses: filtering on LD and PCA
 
+## Defining haplotype blocks
+
+```bash
+#! /bin/bash
+
+#haplotypeBlocks5000.sh
+
+module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
+
+NAME=haplotypeBlocks5000
+
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
+  --out ${NAME} \
+  --blocks no-pheno-req no-small-max-span \
+  --blocks-max-kb 5000
+```
+
+### Obtaining 5 first columns for further Analysis
+```bash
+ awk '{print $1,$2,$3,$4,$5}' haplotypeBlocks5000.blocks.det > haplotypeBlocks5000.blocks.cols
+```
+
 ## Preleminary filters on missing genotype data for SNPs and for samples:
 
 * --maf filters out all variants with minor allele frequency below the provided threshold (default 0.01)
@@ -282,5 +304,5 @@ plink --bfile ${NAME}_pruned \
 ![Chromosome 7](/Figures_3_LD_PCA/PlotChrs7_3_8_Mb.pdf)
 ![Chromosome 11](/Figures_3_LD_PCA/PlotChrs11_3_8_Mb.pdf)
 
-* SNP counts in haplotypeblocks are lower.
-* Larger window sizes for LD pruning eliminate more SNPs in haplotype blocks
+* SNP counts in large haplotypeblocks are lower.
+* Larger window sizes for LD pruning eliminate more SNPs in large haplotype blocks
