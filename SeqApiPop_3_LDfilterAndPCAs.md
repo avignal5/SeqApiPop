@@ -267,7 +267,7 @@ plink --bfile ${NAME}_pruned \
 
 ### Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.
 
-![image](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.pdf)
+![image](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.png)
 
 ### Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks
 
