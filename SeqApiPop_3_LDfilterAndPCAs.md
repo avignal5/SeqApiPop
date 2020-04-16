@@ -276,6 +276,6 @@ plink --bfile ${NAME}_pruned \
 * And a selection of 4 haplotype haploBlocks
 
 ![Chromosome 2](/Figures_3_LD_PCA/PlotChrs2_0_3_Mb.pdf)
-![Chromosome 4](/Figures_3_LD_PCA/PlotChrs4_0_3.5_Mb.pdf)
+![Chromosome 4](/Figures_3_LD_PCA/PlotChrs4_0_3_Mb.pdf)
 ![Chromosome 7](/Figures_3_LD_PCA/PlotChrs7_3_8_Mb.pdf)
 ![Chromosome 11](/Figures_3_LD_PCA/PlotChrs11_3_8_Mb.pdf)
