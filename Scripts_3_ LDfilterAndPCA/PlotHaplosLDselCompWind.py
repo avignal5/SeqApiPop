@@ -13,30 +13,43 @@ import re
 import csv
 from collections import defaultdict
 
+"""
+Import chromosome lengths. In the present case, the file also used for the mapping and other scripts, with:
+column 1 = accession number for the chromosomes, as found in the vcf files
+column 2 = chromosome length in bp
+"""
 #Import chromosome lengths
 chroms = pd.read_csv("/Users/avignal/Documents/Stats/2019_SeqApiPop_HAv3_1/StandardFiles/HAv3_1_Chromosomes.list", sep = "\t", header = None)
 chroms.columns = ['Accession','Length']
 chroms['chrNb'] = chroms.index + 1
 chroms['LengthMb'] = chroms['Length'] / 1000000
 
-#List of Chromosomes and chromosome names
+#List of Chromosomes, as numbers such as in plink
 chromsList = list(range(1,17))
 chromsList.reverse()
 ybins = len(chromsList)
 
+#List of the corresponding chromosome lengths
 chromlengthList = chroms.LengthMb.tolist()[0:16]
 chromlengthList.reverse()
 
+#List of chromosomes as Chr&, Chr2 ... Chr16, for the figure legend
 chrNames = list(range(1,ybins+1))
 chrNames = ["Chr " + str(s) for s in chrNames]
 chrNames.reverse()
 
+"""
+Import the haploblock data, from a file corresponding to the 5 first columns of the output file "haplotypeBlocks5000.blocks.det"
+from the plink "--block" function
+To highlight the haploblocks of a size larger than the setting in the "plot haplotype blocks" section below
+"""
 #Import haploblocks data
 haploBlocks = pd.read_csv("/Users/avignal/Documents/Stats/2019_SeqApiPop_HAv3_1/HaplotypeBlocksPlink/haplotypeBlocks5000.blocks.cols", sep = " ")
 haploBlocks['BP'] = haploBlocks['KB'] * 1000
 
-#Import SNP selected on LD
-
+"""
+Import SNP selected on LD: the *.bim outputs corresponding to the various parameters used in plink "--indep-pairwise" function
+"""
 LD02Chr = pd.read_csv("/Users/avignal/Documents/Stats/2019_SeqApiPop_HAv3_1/PCA7millionSNPsWindowChr/bimFiles/LD02_Chromosomes_pruned.bim", sep = "\t", header=None)
 LD02Chr.columns = ['Chr','SNP','Val','Pos','Ref','Alt']
 LD02Chr['PosMb'] = LD02Chr['Pos'] / 1000000
@@ -72,6 +85,10 @@ LD05kb10['PosMb'] = LD05kb10['Pos'] / 1000000
 LD09kb10 = pd.read_csv("/Users/avignal/Documents/Stats/2019_SeqApiPop_HAv3_1/PCA7millionSNPsWindow10kb/bimFiles/LD09_Chromosomes_pruned.bim", sep = "\t", header=None)
 LD09kb10.columns = ['Chr','SNP','Val','Pos','Ref','Alt']
 LD09kb10['PosMb'] = LD09kb10['Pos'] / 1000000
+
+"""
+Figure
+"""
 
 #Figure title
 title = "Influence of window size on LD selection"
