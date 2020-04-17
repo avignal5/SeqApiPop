@@ -18,6 +18,8 @@
 	- [3.3. The same LD values were also run with smaller size windows](#33-the-same-ld-values-were-also-run-with-smaller-size-windows)
 		- [3.3.1. For instance 1 Mb window and LD = 0.05:](#331-for-instance-1-mb-window-and-ld-005)
 	- [3.4. Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.](#34-figure-showing-the-number-of-snps-selected-for-different-combinations-of-ld-thresholds-and-window-sizes)
+		- [3.4.1 Make a table fot the plot](#341-make-a-table-fot-the-plot)
+		- [Plot data](#plot-data)
 	- [3.5. Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks](#35-figures-showing-the-influence-of-ld-thresholds-and-window-sizes-on-the-selection-of-snps-in-haplotype-blocks)
 
 <!-- /TOC -->
@@ -335,6 +337,19 @@ plink --bfile ${NAME}_pruned \
 ```
 
 ### 3.4. Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.
+#### 3.4.1 Make a table fot the plot
+
+* Table : LD threshold, window size, SNPs retained
+* Done by extracting the data from the logfiles of the plink --pca runs
+
+```bash
+#!/bin/bash
+grep 'variants loaded' PCAsWind*/PCA*log | sed s'/variants loaded from .bim file.//' | sed 's/:/\t/' | sed 's/_/\t/g' | sed 's/\//\t/' | sed 's/PCAsWindow//' | grep -v 7millionSNPs
+ | awk 'BEGIN{OFS="\t"}{print $1,$3,$5}' > SNPselectionStats2.txt
+```
+
+#### Plot data
+* script PlotHaplosLDChrRegion.py
 
 ![SNPs selected by LD values and window sizes.](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.png)
 ![downloadable pdf version](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.pdf)
