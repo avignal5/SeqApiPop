@@ -21,6 +21,8 @@
 		- [3.4.1 Make a table fot the plot](#341-make-a-table-fot-the-plot)
 		- [Plot data](#plot-data)
 	- [3.5. Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks](#35-figures-showing-the-influence-of-ld-thresholds-and-window-sizes-on-the-selection-of-snps-in-haplotype-blocks)
+- [4. Plot the PCAs](#4-plot-the-pcas)
+	- [4.1. Copy with standard names](#41-copy-with-standard-names)
 
 <!-- /TOC -->
 
@@ -368,3 +370,26 @@ grep 'variants loaded' PCAsWind*/PCA*log | sed s'/variants loaded from .bim file
 
 * SNP counts in large haplotypeblocks are lower.
 * Larger window sizes for LD pruning eliminate more SNPs in large haplotype blocks
+
+## 4. Plot the PCAs
+### 4.1. Copy with standard names
+* run the script below for the *.log, *.eigenvec and *.eigenval files
+
+```bash
+#!/bin/bash
+
+#copyRename.#!/usr/bin/env bash
+#Copies the outputs from plink --PCA and renames with window size and LD thresholds used
+
+for i in `ls ../PCA*/PCA*eigenval | grep Wind | grep -v 7millionSNPs`
+do
+WIND=${i%/*}
+WIND=${WIND#*/}
+WIND=${WIND/PCAsWindow}
+LD=${i%_*}
+LD=${LD#*_}
+NAME=PCA_${WIND}_${LD}.eigenval
+cp ${i} ${NAME}
+done
+```
+* all in /Users/avignal/Documents/Stats/2019_SeqApiPop_HAv3_1/PCAsAll
