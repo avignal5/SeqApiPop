@@ -23,6 +23,10 @@
 	- [3.5. Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks](#35-figures-showing-the-influence-of-ld-thresholds-and-window-sizes-on-the-selection-of-snps-in-haplotype-blocks)
 - [4. Plot the PCAs](#4-plot-the-pcas)
 	- [4.1. Copy with standard names](#41-copy-with-standard-names)
+	- [For the moment, the best compromise seems to be LD = 0.02 ; window = whole chromosome.](#for-the-moment-the-best-compromise-seems-to-be-ld-002-window-whole-chromosome)
+- [5. Same analysis, removing the NCA, MOSAR and redundant bees from the same hive](#5-same-analysis-removing-the-nca-mosar-and-redundant-bees-from-the-same-hive)
+	- [5.1 Example script](#51-example-script)
+	- [5.2 results](#52-results)
 
 <!-- /TOC -->
 
@@ -393,3 +397,45 @@ cp ${i} ${NAME}
 done
 ```
 * all in /Users/avignal/Documents/Stats/2019_SeqApiPop_HAv3_1/PCAsAll
+* Then run the script Plot6PCAs.py
+
+### For the moment, the best compromise seems to be LD = 0.02 ; window = whole chromosome.
+
+
+## 5. Same analysis, removing the NCA, MOSAR and redundant bees from the same hive
+
+### 5.1 Example script
+
+```bash
+#! /bin/bash
+
+#LD015_Chromosomes.sh
+
+module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
+
+NAME=LD015_Chromosomes
+
+plink --bfile ../../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
+  --keep ../DataSamplesNoNcaNoMosarNoDuplicates.list \
+  --out ${NAME} \
+  --indep-pairwise 100 kb 10 0.15
+
+plink --bfile ../../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
+  --out ${NAME}_pruned \
+  --keep ../DataSamplesNoNcaNoMosarNoDuplicates.list \
+  --extract ${NAME}.prune.in \
+  --make-bed
+
+plink --bfile ${NAME}_pruned \
+  --out PCA_${NAME} \
+  --pca
+```
+
+* all in /Users/avignal/Documents/Stats/2019_SeqApiPop_HAv3_1/PCAsNoNcaNoMosarNoDuplicates
+* Then run the script Plot6PCAs.py for plotting reference populations from 6 different run conditions (LD values, Window sizes) to one page.
+* Run script Plot6PCAsAllPops.py for plotting all populations for one condition in 6 plots to one page.
+
+### 5.2 results
+
+* Filtering with LD 0.3 gives a good compromise between keeping the C-type, M-type and caucasicas separate, while separating subpopulations (especially of melliferas). The number of SNPs retained varies between 800,000 (window of the size of a chromosome) and 2.5 million (10 kb window), but the pattern is stable over the different window sizes.
+* Filtering with LD 0.2 (window of the size of a chromosome) further separates the mellifera groups (400,000 SNPs retained), but smaller windows tend to separate the ibericas before the caucasicas, a pattern which is not representative of the "all SNPs" pattern of 3 main sub-populations.
