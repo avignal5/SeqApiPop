@@ -2,21 +2,24 @@
 
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-
 - [1. introduction](#1-introduction)
 - [2. Filters on annotations in the vcf file](#2-filters-on-annotations-in-the-vcf-file)
 	- [2.1. In the INFO field: SNP quality estimations](#21-in-the-info-field-snp-quality-estimations)
 	- [2.2. Sample level annotations: genotype quality estimations](#22-sample-level-annotations-genotype-quality-estimations)
 - [3. Other filters](#3-other-filters)
-- [4. SCRIPTS](#4-scripts)
+- [4. SCRIPTS for filtering](#4-scripts-for-filtering)
 	- [4.1. Calling script: run_vcfcleanup.sh](#41-calling-script-runvcfcleanupsh)
 		- [4.1.1. General variables to edit: paths, number of authorised alleles](#411-general-variables-to-edit-paths-number-of-authorised-alleles)
 		- [4.1.2. Variables to edit for quality filter threshold values :](#412-variables-to-edit-for-quality-filter-threshold-values-)
 		- [4.1.3. Variables to edit for type of run](#413-variables-to-edit-for-type-of-run)
 		- [4.1.4. Parameters used in the study](#414-parameters-used-in-the-study)
 	- [vcf filter (only done once to prepare list SNP positions)](#vcf-filter-only-done-once-to-prepare-list-snp-positions)
-	- [4.2. vcf_cleanup.sh, calling combine_filter.r, filter_venn_diag.r, filter_list.r, count_phased_geno.py](#42-vcfcleanupsh-calling-combinefilterr-filtervenndiagr-filterlistr-countphasedgenopy)
-
+	- [4.2. vcf_cleanup.sh, calling diagnostic.r, filter.r, filter_list.r, count_phased_geno.py](#42-vcfcleanupsh-calling-diagnosticr-filterr-filterlistr-countphasedgenopy)
+- [5. results:](#5-results)
+- [6. Prepare bed, bim, fam files for plink, admixture, ...](#6-prepare-bed-bim-fam-files-for-plink-admixture-)
+	- [6.1. change chromosome names to numbers](#61-change-chromosome-names-to-numbers)
+	- [6.2 Prepare bed, bim, fam files](#62-prepare-bed-bim-fam-files)
+	- [6.3 Finally, a more stringent filters on missing genotype data for SNPs and for samples was used:](#63-finally-a-more-stringent-filters-on-missing-genotype-data-for-snps-and-for-samples-was-used)
 
 <!-- /TOC -->
 
@@ -331,63 +334,63 @@ plink --vcf ${VCFin} \
 	* 7023689 variants and 869 samples pass filters and QC.
 
 
-## 6.3 Finally, a more stringent filters on missing genotype data for SNPs and for samples was used:
+### 6.3 Finally, a more stringent filters on missing genotype data for SNPs and for samples was used:
 
-	* --maf filters out all variants with minor allele frequency below the provided threshold (default 0.01)
-	* --geno filters out all variants with missing call rates exceeding the provided value (default 0.1) to be removed
-	* --mind does the same for samples.
-	* --indep-pairwise 500000 50000 0.9 : LD filters out variants with LD > 0.9, on a window of 500000 SNPs, a sliding window of 50000.
-
-
-	File with the 7023689  variants:
-	/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink
+* --maf filters out all variants with minor allele frequency below the provided threshold (default 0.01)
+* --geno filters out all variants with missing call rates exceeding the provided value (default 0.1) to be removed
+* --mind does the same for samples.
+* --indep-pairwise 500000 50000 0.9 : LD filters out variants with LD > 0.9, on a window of 500000 SNPs, a sliding window of 50000.
 
 
-	More stringent on missing data in individuals:
+File with the 7023689  variants:
+/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink
 
-	```bash
-	#! /bin/bash
 
-	#convertToBed.bash
+More stringent on missing data in individuals:
 
-	module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
+```bash
+#! /bin/bash
 
-	VCFin=/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf
-	VCFout=/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno
-	plink --vcf ${VCFin} \
-	  --keep-allele-order \
-	  --a2-allele ${VCFin} 4 3 '#' \
-	  --allow-no-sex \
-	  --allow-extra-chr \
-	  --chr-set 16 \
-	  --set-missing-var-ids @:#[HAV3.1]\$1\$2 \
-	  --chr 1-16 \
-	  --mind 0.1 \
-	  --geno 0.1 \
-	  --out ${VCFout} \
-	  --make-bed \
-	  --missing
-	```
+#convertToBed.bash
 
-	* 11075 variants removed due to missing genotype data (--geno)
-	* 15 samples removed due to missing genotype data (--mind).
+module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
 
-	**Samples removed: frequency of missing genotypes from the \*.imiss plink file:**
+VCFin=/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf
+VCFout=/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno
+plink --vcf ${VCFin} \
+  --keep-allele-order \
+  --a2-allele ${VCFin} 4 3 '#' \
+  --allow-no-sex \
+  --allow-extra-chr \
+  --chr-set 16 \
+  --set-missing-var-ids @:#[HAV3.1]\$1\$2 \
+  --chr 1-16 \
+  --mind 0.1 \
+  --geno 0.1 \
+  --out ${VCFout} \
+  --make-bed \
+  --missing
+```
 
-	|ID | N_MISS | N_GENO | F_MISS|
-	|:---|---:|---:|---:|
-	|AOC4 | 1270404 | 7023689 | 0.1809|
-	|BR12 | 1269182 | 7023689 | 0.1807|
-	|BR1A | 1253619 | 7023689 | 0.1785|
-	|ESP9 | 6208279 | 7023689 | 0.8839|
-	|JFM21 | 725846 | 7023689 | 0.1033|
-	|JFM24 | 817509 | 7023689 | 0.1164|
-	|JFM3 | 875208 | 7023689 | 0.1246|
-	|JFM5 | 830181 | 7023689 | 0.1182|
-	|KF21 | 722607 | 7023689 | 0.1029|
-	|OUE8 | 831427 | 7023689 | 0.1184|
-	|PM1 | 969888 | 7023689 | 0.1381|
-	|SavB1 | 823422 | 7023689 | 0.1172|
-	|SavB3 | 706024 | 7023689 | 0.1005|
-	|XC3 | 821334 | 7023689 | 0.1169|
-	|XC4 | 747325 | 7023689 | 0.1064|
+* 11075 variants removed due to missing genotype data (--geno)
+* 15 samples removed due to missing genotype data (--mind).
+
+**Samples removed: frequency of missing genotypes from the \*.imiss plink file:**
+
+|ID | N_MISS | N_GENO | F_MISS|
+|:---|---:|---:|---:|
+|AOC4 | 1270404 | 7023689 | 0.1809|
+|BR12 | 1269182 | 7023689 | 0.1807|
+|BR1A | 1253619 | 7023689 | 0.1785|
+|ESP9 | 6208279 | 7023689 | 0.8839|
+|JFM21 | 725846 | 7023689 | 0.1033|
+|JFM24 | 817509 | 7023689 | 0.1164|
+|JFM3 | 875208 | 7023689 | 0.1246|
+|JFM5 | 830181 | 7023689 | 0.1182|
+|KF21 | 722607 | 7023689 | 0.1029|
+|OUE8 | 831427 | 7023689 | 0.1184|
+|PM1 | 969888 | 7023689 | 0.1381|
+|SavB1 | 823422 | 7023689 | 0.1172|
+|SavB3 | 706024 | 7023689 | 0.1005|
+|XC3 | 821334 | 7023689 | 0.1169|
+|XC4 | 747325 | 7023689 | 0.1064|
