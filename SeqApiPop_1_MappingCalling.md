@@ -61,7 +61,7 @@
 ## 1. Introduction
 This document presents the analyses performed for obtaining the results presented in the paper *SeqApiPop* by Wragg et al (2020). Scripts will have to be adapted to your local environment (SGE vs Slurm cluster; paths...)
 
-The main scripts are in [ScriptsMappingCalling](ScriptsMappingCalling).
+The main scripts are in [ScriptsMappingCalling](Scripts_1_MappingCalling).
 
 Short scripts are directly described in the text.
 
