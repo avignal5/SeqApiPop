@@ -59,7 +59,7 @@
 <!-- /TOC -->
 
 ## 1. Introduction
-This document presents the analyses performed for obtaining the results presented in the paper *SeqApiPop* by Wragg et al (2020). Scripts will have to be adapted to your local environment (SGE vs Slurm cluster; paths...)
+This document presents the analyses performed for obtaining the results presented in the paper *SeqApiPop* by Wragg et al (2020). Scripts and paths will have to be adapted to your local environment (SGE vs Slurm cluster; paths...)
 
 The main scripts are in [Scripts_1_MappingCalling](Scripts_1_MappingCalling).
 
