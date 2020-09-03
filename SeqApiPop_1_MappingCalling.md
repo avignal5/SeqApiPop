@@ -112,6 +112,11 @@ For each sample/run, there is one \*_R1.fastq.gz and one \*_R2.fastq.gz file wit
 ### 2.3. Mapping: Calling script: Map_seqapipop_HAV3_1.bash
 The mapping scripts perform mapping with BWA, marking duplicate reads with Picard, GATK BQSR (Base Quality Score Recalibration) and variant calling with GATK HaplotypeCaller, thus producing individual *.gvcf files.
 
+Map_seqapipop_HAV3_1.bash will call:
+[mappingAV_2019_Dec.sh](Scripts_1_MappingCalling/mappingAV_2019_Dec.sh)
+[bootstrapingAV_2019_Dec.sh](Scripts_1_MappingCalling/bootstrapingAV_2019_Dec.sh)
+[callingAV_2019_Dec.sh](Scripts_1_MappingCalling/callingAV_2019_Dec.sh)
+
 #### 2.3.1. Map_seqapipop_HAV3_1.bash
 
 ```bash
