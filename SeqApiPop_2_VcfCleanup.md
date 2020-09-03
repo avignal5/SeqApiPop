@@ -64,17 +64,12 @@ MQRankSum and ReadPosRankSum (italics): were finally not used in the filters, as
 
 ## 4. SCRIPTS for filtering
 
-[run_vcfcleanup.sh](Scripts_2_VcfCleanup/run_vcfcleanup.sh), will call the script:
-
-[vcf_cleanup.sh](Scripts_2_VcfCleanup/vcf_cleanup.sh), which will in turn call the scripts
-
-[diagnostic.r](Scripts_2_VcfCleanup/diagnostic.r)
-
-[filter.r](Scripts_2_VcfCleanup/filter.r)
-
-[filter_list.r](Scripts_2_VcfCleanup/filter_list.r)
-
-[count_phased_geno.py](Scripts_2_VcfCleanup/count_phased_geno.py)
+* [run_vcfcleanup.sh](Scripts_2_VcfCleanup/run_vcfcleanup.sh), will call the script:
+* [vcf_cleanup.sh](Scripts_2_VcfCleanup/vcf_cleanup.sh), which will in turn call the scripts
+* [diagnostic.r](Scripts_2_VcfCleanup/diagnostic.r)
+* [filter.r](Scripts_2_VcfCleanup/filter.r)
+* [filter_list.r](Scripts_2_VcfCleanup/filter_list.r)
+* [count_phased_geno.py](Scripts_2_VcfCleanup/count_phased_geno.py)
 
 ### 4.1. The calling script run_vcfcleanup.sh:
 * All editing of paths and values for filters are done in this script
