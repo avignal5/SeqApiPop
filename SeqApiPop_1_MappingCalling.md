@@ -253,7 +253,7 @@ OUE9_GTCCGC_L008_dedup.metrics
 
 ### 2.4. Merging bams
 #### 2.4.1. Preparing files and scripts
-For each sample/run, there is one \*_R1.fastq.gz and one \*_R2.fastq.gz file with the forward and reverse reads. These are al in the directory *FastqFromNG6*.
+Some samples were sequenced in several runs. For each sample/run, there is one \*_R1.fastq.gz and one \*_R2.fastq.gz file with the forward and reverse reads. These are all in the directory *FastqFromNG6*.
 
 #### 2.4.2. List of samples to merge
 ```bash
@@ -272,6 +272,10 @@ BER17
 The merging script will take a list of samples to merge, merge the corresponding bam files together and re-evaluate duplicate reads. Output will be merged bams in a directory structure identical to the standard mapping, except for the SequencinghLane identifier in "SampleId_LibraryTag_SequencingLane" replaced by "merged": ~/OUE9_GTCCGC_merged/mapping/OUE9_GTCCGC_merged_sort.bam. These will have to be run through the BQSR and calling processes with the script Bootstrap_Call.bash.
 
 ##### 2.4.3.1. callMerging.sh
+
+The script callMerging.sh will call:
+
+[mergingGenologin.sh](Scripts_1_MappingCalling/mergingGenologin.sh)
 
 ```bash
 #!/bin/bash
