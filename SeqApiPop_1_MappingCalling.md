@@ -507,7 +507,7 @@ ls ~/Haploid/*/calling/* | grep vcf.gz$ | awk '{print "    --variant",$1,"\\"}' 
 ```
 
 ```bash
-$ head -3 temp1.listed
+$ head -3 temp.list
 --variant ~/Haploid/AOC16_GTTTCG_L002/calling/AOC16_GTTTCG_L002.g.vcf.gz \
 --variant ~/Haploid/AOC17_CGTACG_L002/calling/AOC17_CGTACG_L002.g.vcf.gz \
 --variant ~/Haploid/AOC18_GAGTGG_L002/calling/AOC18_GAGTGG_L002.g.vcf.gz \
@@ -583,11 +583,11 @@ done
 ### 3.1.5. Check all went to the end
 
 * The idea is to printout the last positions for each chromosome's gvcf file.
-*
+
 #### 3.1.5.1. Example for mitochondrial DNA
 
 ```bash
-vignal@genologin2 ~/seqapipopOnHAV3_1/combineGVCFs/The870vcf $ bcftools query -f '%CHROM\t%POS\n' MetaGenotypesNC_001566.1.g.vcf.gz | tail
+~/seqapipopOnHAV3_1/combineGVCFs/The870vcf $ bcftools query -f '%CHROM\t%POS\n' MetaGenotypesNC_001566.1.g.vcf.gz | tail
 NC_001566.1     16331
 NC_001566.1     16332
 NC_001566.1     16333
@@ -750,7 +750,8 @@ tabix MetaGenotypesCalled870.vcf.gz
 ```bash
 #!/bin/bash
 #statsVcfsRaw.bash
-zcat MetaGenotypesCalled870.vcf.gz  | grep -v '#' | cut -f 1 | sort | uniq -c | awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRaw
+zcat MetaGenotypesCalled870.vcf.gz  | grep -v '#' | cut -f 1 | sort | uniq -c | \
+    awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRaw
 ```
 
 ```bash
@@ -795,7 +796,8 @@ gatk --java-options "-Xmx64g" SelectVariants  \
     -O ${OUT}/MetaGenotypesCalled870_raw_snps.vcf.gz
 
 #Count the SNPs
-zcat MetaGenotypesCalled870_raw_snps.vcf.gz  | grep -v '#' | cut -f 1 | sort | uniq -c | awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRawSNPs
+zcat MetaGenotypesCalled870_raw_snps.vcf.gz  | grep -v '#' | cut -f 1 | sort | uniq -c | \
+    awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRawSNPs
 ```
 
 ```bash
