@@ -1,20 +1,24 @@
 # SeqApiPop analyses: filter vcf file
 
+The corresponding html document and scripts are also found in [Github](https://github.com/avignal5/SeqApiPop)sqjlqscsql
+
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [1. introduction](#1-introduction)
 - [2. Filters on annotations in the vcf file](#2-filters-on-annotations-in-the-vcf-file)
-	- [2.1. In the INFO field: SNP quality estimations](#21-in-the-info-field-snp-quality-estimations)
+	- [2.1. In the INFO field: general SNP quality estimations](#21-in-the-info-field-general-snp-quality-estimations)
 	- [2.2. Sample level annotations: genotype quality estimations](#22-sample-level-annotations-genotype-quality-estimations)
 - [3. Other filters](#3-other-filters)
 - [4. SCRIPTS for filtering](#4-scripts-for-filtering)
-	- [4.1. Calling script: run_vcfcleanup.sh](#41-calling-script-runvcfcleanupsh)
-		- [4.1.1. General variables to edit: paths, number of authorised alleles](#411-general-variables-to-edit-paths-number-of-authorised-alleles)
-		- [4.1.2. Variables to edit for quality filter threshold values :](#412-variables-to-edit-for-quality-filter-threshold-values-)
-		- [4.1.3. Variables to edit for type of run](#413-variables-to-edit-for-type-of-run)
-		- [4.1.4. Parameters used in the study](#414-parameters-used-in-the-study)
-	- [vcf filter (only done once to prepare list SNP positions)](#vcf-filter-only-done-once-to-prepare-list-snp-positions)
-	- [4.2. vcf_cleanup.sh, calling diagnostic.r, filter.r, filter_list.r, count_phased_geno.py](#42-vcfcleanupsh-calling-diagnosticr-filterr-filterlistr-countphasedgenopy)
+	- [4.1. General variables to edit in the calling script run_vcfcleanup.sh](#41-general-variables-to-edit-in-the-calling-script-runvcfcleanupsh)
+	- [4.2. Variables to edit for quality filter threshold values :](#42-variables-to-edit-for-quality-filter-threshold-values-)
+	- [4.3. Variables to edit for type of run](#43-variables-to-edit-for-type-of-run)
+	- [4.4. Parameters used in the study](#44-parameters-used-in-the-study)
+		- [4.4.1 Plotting the diagnostic histograms](#441-plotting-the-diagnostic-histograms)
+			- [4.4.1.1 Mapping quality metrics: Stand Odds Ratio (SOR)](#4411-mapping-quality-metrics-stand-odds-ratio-sor)
+			- [4.4.1.2 Mapping quality metrics: Fisher Strand (FS)](#4412-mapping-quality-metrics-fisher-strand-fs)
+			- [4.4.1.3 Mapping quality metrics: Mapping Quality (MQ)](#4413-mapping-quality-metrics-mapping-quality-mq)
+		- [4.4.2 Running the filters: Venn diagrams and filtered vcf](#442-running-the-filters-venn-diagrams-and-filtered-vcf)
 - [5. results:](#5-results)
 - [6. Prepare bed, bim, fam files for plink, admixture, ...](#6-prepare-bed-bim-fam-files-for-plink-admixture-)
 	- [6.1. change chromosome names to numbers](#61-change-chromosome-names-to-numbers)
@@ -171,22 +175,40 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
 
 # end of file
 ```
+<div style="page-break-after: always"></div>
+##### 4.4.1.1 Mapping quality metrics: Stand Odds Ratio (SOR)
 
-##### 4.4.1.1 Stand Odds Ratio (SOR)
-
------------------------
 ![](SeqApiPop_2_VcfCleanup.assets/plot_decision_SOR_Hist.pdf.png)
 
-Counts of markers according to SOR values.
+Counts of markers according to SOR values. The blue dotted line indicated the threshold retained for filtering the vcf: SOR > 4.
 
 -----------------------
 
 ![](SeqApiPop_2_VcfCleanup.assets/plot_decision_SOR_ECDF.pdf.png)
-empirical cumulative distribution function of SOR values
+empirical cumulative distribution function of SOR values.  The blue dotted line indicated the threshold used for filtering the vcf: SOR > 4.
+
+-----------------------
+
+<div style="page-break-after: always"></div>
+##### 4.4.1.2 Mapping quality metrics: Fisher Strand (FS)
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_FS_Hist.pdf.png.png)
+Counts of markers according to FS values. The blue dotted line indicated the threshold used for filtering the vcf: FS < 61. X axis is on a log scale log(61)=1,785.
+
+-----------------------
+
+<div style="page-break-after: always"></div>
+
+##### 4.4.1.3 Mapping quality metrics: Mapping Quality (MQ)
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_MQ_Hist.png)
+Counts of markers according to MQ values. The blue dotted line indicated the threshold used for filtering the vcf: MQ > 40.
 
 -----------------------
 
 
+
+<div style="page-break-after: always"></div>
 
 #### 4.4.2 Running the filters: Venn diagrams and filtered vcf
 Running the following script with run='filter_all', will perform the filtering and produce the Venn diagrams and filtered vcf file.
@@ -196,7 +218,7 @@ Running the following script with run='filter_all', will perform the filtering a
 
 #run_vcf_cleanup.sh
 
-###vcf filter (only done once to prepare list SNP positions)
+#vcf filter (only done once to prepare list SNP positions)
 
 # modules #####################################################
 module load system/R-3.5.1
