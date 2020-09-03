@@ -355,7 +355,7 @@ $ ls OUE8_CCGTCC_merged/mapping
 OUE8_CCGTCC_merged_sort.bam  OUE8_CCGTCC_merged_sort.bam.bai  OUE8.list
 ```
 
-These will have to be run through the BQSR and calling processes with the script Bootstrap_Call.bash
+These will have to be run through the BQSR and calling processes with the script [Bootstrap_Call.bash](Scripts_1_MappingCalling/Bootstrap_Call.bash), that will then call [callingAV_2019_Dec.sh](Scripts_1_MappingCalling/callingAV_2019_Dec.sh) for the genotyping.
 
 
 #### 2.4.4. BQSR and calling on the merged bams
