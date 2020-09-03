@@ -112,7 +112,7 @@ For each sample/run, there is one \*_R1.fastq.gz and one \*_R2.fastq.gz file wit
 ### 2.3. Mapping: Calling script: Map_seqapipop_HAV3_1.bash
 The mapping scripts perform mapping with BWA, marking duplicate reads with Picard, GATK BQSR (Base Quality Score Recalibration) and variant calling with GATK HaplotypeCaller, thus producing individual *.gvcf files.
 
-Map_seqapipop_HAV3_1.bash will take a list of paths to sample names and call:
+[Map_seqapipop_HAV3_1.bash](Scripts_1_MappingCalling/Map_seqapipop_HAV3_1.bash) will take a list of paths to sample names and call:
 
 [mappingAV_2019_Dec.sh](Scripts_1_MappingCalling/mappingAV_2019_Dec.sh), that will perform the mapping and duplicate reads detection, then call:
 
@@ -273,7 +273,7 @@ The merging script will take a list of samples to merge, merge the corresponding
 
 ##### 2.4.3.1. callMerging.sh
 
-The script callMerging.sh will call:
+The script [callMerging.sh](Scripts_1_MappingCalling/callMerging.sh) will call:
 
 [mergingGenologin.sh](Scripts_1_MappingCalling/mergingGenologin.sh)
 
@@ -355,11 +355,16 @@ $ ls OUE8_CCGTCC_merged/mapping
 OUE8_CCGTCC_merged_sort.bam  OUE8_CCGTCC_merged_sort.bam.bai  OUE8.list
 ```
 
-These will have to be run through the BQSR and calling processes with the script [Bootstrap_Call.bash](Scripts_1_MappingCalling/Bootstrap_Call.bash), that will then call [callingAV_2019_Dec.sh](Scripts_1_MappingCalling/callingAV_2019_Dec.sh) for the genotyping.
-
+These will have to be run through the BQSR and calling processes with the script [Bootstrap_Call.bash](Scripts_1_MappingCalling/Bootstrap_Call.bash).
 
 #### 2.4.4. BQSR and calling on the merged bams
 ##### 2.4.4.1. Bootstrap_Call.bash script
+
+[Bootstrap_Call.bash](Scripts_1_MappingCalling/Bootstrap_Call.bash), takes a list of merged bam files and will call:
+
+[mappingAV_2019_Dec_RelanceBoots.sh](Scripts_1_MappingCalling/mappingAV_2019_Dec_RelanceBoots.sh), itself calling:
+
+[callingAV_2019_Dec.sh](Scripts_1_MappingCalling/callingAV_2019_Dec.sh) for the genotyping.
 
 ```bash
 #!/bin/bash
@@ -437,7 +442,7 @@ OUE8_CCGTCC_merged_dedup.metrics
 ```
 
 #### 2.4.4.4. Same samples under different names.
-JFM8 and JFM11 were used for testing a PCR-)free library preparation protocol and are sequenced under different names:
+JFM8 and JFM11 were used for testing a PCR-free library preparation protocol and are sequenced under different names:
 * JFM8_ACTTGA_L001
 * JFM8-PCRfree_TCGAAG_L001
 * JFM11_GGCTAC_L001
@@ -445,10 +450,11 @@ JFM8 and JFM11 were used for testing a PCR-)free library preparation protocol an
 
 This causes problems in the calling step, as the sample names are different (merging works, but message at the calling step saying that there are two samples in the bam).
 
-Two specific scripts had to be used: mergingJFM8.sh and mergingJFM11.sh, followed by Bootstrap_Call.bash
+Two specific scripts had to be used: [mergingJFM8.sh](Scripts_1_MappingCalling/mergingJFM8.sh) and [mergingJFM11.sh](Scripts_1_MappingCalling/mergingJFM11.sh), followed by Bootstrap_Call.bash
 
 ### 2.5 controlling that all gvcf files are complete
 #### 2.5.1 Script controlVcfs.bash
+[controlVcfs.bash](Scripts_1_MappingCalling/controlVcfs.bash)
 * Counts the number of variants per chromosomes for each sample
 * All directories for all 870 samples are in ~/Haploid
 
