@@ -65,24 +65,36 @@ MQRankSum and ReadPosRankSum (italics): were finally not used in the filters, as
 ## 4. SCRIPTS for filtering
 
 * [run_vcfcleanup.sh](Scripts_2_VcfCleanup/run_vcfcleanup.sh), will call the script:
-  * [vcf_cleanup.sh](Scripts_2_VcfCleanup/vcf_cleanup.sh), which will in turn call the scripts
-    * [diagnostic.r](Scripts_2_VcfCleanup/diagnostic.r)
-    * [filter.r](Scripts_2_VcfCleanup/filter.r)
-    * [filter_list.r](Scripts_2_VcfCleanup/filter_list.r)
-    * [count_phased_geno.py](Scripts_2_VcfCleanup/count_phased_geno.py)
+  * [vcf_cleanup.sh](Scripts_2_VcfCleanup/vcf_cleanup.sh), which will call the scripts:
+    * [diagnostic.r](Scripts_2_VcfCleanup/diagnostic.r). Will output:
+	  * histogram and ecdf plots for the distribution of the various quality estimators in the input vcf.
+	  * Values set for filtering in run_vcfcleanup.sh will be indicated on the plots
+    * [filter.r](Scripts_2_VcfCleanup/filter.r). Will output:
+        * Venn diagrams
+		* the list of SNPs to keep: list_kept.txt.
+			* Any SNP marker having > 3 alleles or one of the alleles being an indel (noted '*' in the ALT field ofthe vcf) will be removed by the script.
+		    * list_kept.txt will be used by vcf_cleanup.sh to produce the filtered vcf.
+		* the number of SNPs in the input and the output vcfs will be counted.
+    * [filter_list.r](Scripts_2_VcfCleanup/filter_list.r). Will output:
+	    * Filters will be run, producing intermediate vcf files and the number of SNPs will be counted counted for each vcf file.
+		* Will remove any SNP marker having > 3 alleles or one of the alleles being an indel (noted '*' in the ALT field of the vcf)
+    * [count_phased_geno.py](Scripts_2_VcfCleanup/count_phased_geno.py). Will output:
+      * count_phased_geno.txt : number of unphased, phased and missing genotype calls for each variant of the input vcf
 
-### 4.1. The calling script run_vcfcleanup.sh:
+* According to the [type of run](#413-variables-to-edit-for-type-of-run): 'diagnostic', 'filter_all' or 'filter_sequential', only the diagnostic plots will be produced or the plots plus the filtering.
+
+### 4.1. General variables to edit in the calling script run_vcfcleanup.sh
+* paths, number of authorised alleles, etc.
 * All editing of paths and values for filters are done in this script
-#### 4.1.1. General variables to edit in the script: paths, number of authorised alleles
-* username=avignal # Deprecated
-* SCRIPTS='~/seqapipopOnHAV3_1/vcf_cleanup_scripts' #path to the scripts called
-* DIRIN='~/seqapipopOnHAV3_1/combineGVCFs/The870vcf' #path to directory containing the input vcf
-* DIROUT='~/seqapipopOnHAV3_1/vcf_cleanup' #path to output directory
-* VCFIN='MetaGenotypesCalled870_raw_snps.vcf.gz' #name of the vcf file to filter
-* limit_allele=3 #accept up to three alleles (edit to 2 or 4)
+  - username=avignal # Deprecated
+  - SCRIPTS='~/seqapipopOnHAV3_1/vcf_cleanup_scripts' #path to the other scripts called
+  - DIRIN='~/seqapipopOnHAV3_1/combineGVCFs/The870vcf' #path to directory containing the input vcf
+  - DIROUT='~/seqapipopOnHAV3_1/vcf_cleanup' #path to output directory
+  - VCFIN='MetaGenotypesCalled870_raw_snps.vcf.gz' #name of the vcf file to filter
+  - limit_allele=3 #accept up to three alleles (edit to 2 or 4)
 
-#### 4.1.2. Variables to edit for quality filter threshold values :
-For all filter threshold set to x=-999, as filter threshold value the value will be calculated and assigned to the variable, so as to eliminate a proportion of the data fixed by the variables quantile_prob_above_threshold and quantile_prob_below_threshold.
+### 4.2. Variables to edit for quality filter threshold values :
+The variables limit_FS, limit_SOR ... limit_het can either be set to a specified value, or set to -999, in which case each filter threshold will be calculated such as a percentage of the data, specified in the variables quantile_prob_above_threshold and quantile_prob_below_threshold, will be kept.
 
 * limit_FS=61
 * limit_SOR=4
@@ -103,14 +115,15 @@ For all filter threshold set to x=-999, as filter threshold value the value will
 * kept_below_threshold="FS_SOR_allele\~miss_het\~GQfiltered"
   - kept_above_threshold and kept_below_threshold: variables are separated by "_" and groups of variables by "~". The number of groups of variables must be the same, hence GQ in two groups for kept_above_threshold
 
-#### 4.1.3. Variables to edit for type of run
-* run='diagnostic' #type of run: 'diagnostic', 'filter_all' or 'filter_sequential'
+### 4.3. Variables to edit for type of run
+* The variable #run can take the values: 'diagnostic', 'filter_all' or 'filter_sequential'
   - diagnostic: will only output the distribution plots for each quality parameter, to help decide on threshold values setting.
   - filter_all: will filter the vcf file using all parameters set by the variables simultaneously, as specified in the kept_above_threshold and kept_below_threshold variables
   - filter_sequential: filter on each parameter set by the variables, but sequencially.
 
-#### 4.1.4. Parameters used in the study
-* Plotting the histograms
+### 4.4. Parameters used in the study
+#### 4.4.1 Plotting the diagnostic histograms
+A run with run='diagnostic' will plot histograms and empirical cumulative distribution functions (ECDF), without performing the actual filtering. Once satisfactory filtering values are obtained, a second run='filter_all' will perform the filtering and produce the Venn diagrams.
 
 ```bash
 #! /bin/bash
@@ -158,7 +171,25 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
 
 # end of file
 ```
-* Running the filters: Venn diagrams and filtered vcf
+
+##### 4.4.1.1 Stand Odds Ratio (SOR)
+
+-----------------------
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_SOR_Hist.pdf.png)
+
+Counts of markers according to SOR values.
+
+-----------------------
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_SOR_ECDF.pdf.png)
+empirical cumulative distribution function of SOR values
+
+-----------------------
+
+
+
+##### 4.4.2 Running the filters: Venn diagrams and filtered vcf
+Running the following script with run='filter_all', will perform the filtering and produce the Venn diagrams and filtered vcf file.
 
 ```bash
 #! /bin/bash
@@ -206,26 +237,6 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
 
 # end of file
 ```
-
-### 4.2. vcf_cleanup.sh, calling diagnostic.r, filter.r, filter_list.r, count_phased_geno.py
-
-* if run='diagnostic' specified in run_vcf_cleanup.sh
-  - will call the R script diagnostic.r, which will produce:
-      - histogram and ecdf plots for the distribution of the various quality estimators in the input vcf.
-      - values set for filtering in run_vcfcleanup.sh will be indicated on the plots
-* if run='filter_all' specified in run_vcf_cleanup.sh:
-  - Will call the R script filter.r, which will produce:
-    - Venn diagrams
-    - The list of SNPs to keep: list_kept.txt
-      - Any SNP marker having > 3 alleles or one of the alleles being an indel (noted '*' in the ALT field ofthe vcf) will be removed by the script.
-  - Produces the filtered output vcf using vcftools and list_kept.txt
-  - Counts the number of SNPs in the input and the output vcfs
-  - Calls he python script count_phased_geno.py, which will produce:
-    - count_phased_geno.txt : number of unphased, phased and missing genotype calls for each variant of the input vcf
-* if run='filter' specified in run_vcf_cleanup.sh:
-  - Will call filter_list.r
-    - Will remove any SNP marker having > 3 alleles or one of the alleles being an indel (noted '*' in the ALT field of the vcf)
-  - Filters will be run, producing intermediate vcf files and the number of SNPs will be counted counted for each vcf file.
 
 ## 5. results:
 * See the Venn diagrams for the selection of markers based on filtering criteria in Figures_S1_VcfCleanup.
