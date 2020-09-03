@@ -27,14 +27,14 @@
 
 [On hard filtering variants](https://gatk.broadinstitute.org/hc/en-us/articles/360035890471-Hard-filtering-germline-short-variants)
 
-Variants were filtered on the INFO field and on samples-level annotations of the vcf. As we sequenced haploid drones, SNPs with a high proportion of heterozygote calls were also filtered out. Finally, we removed the SNP markers having an additional allele noted * (InDel).
+Variants were filtered on the INFO field and on samples-level annotations of the vcf. As we genotyped under a diploid model whereas sequenced haploid drones, SNPs with a high proportion of heterozygote calls were also filtered out. Finally, we removed the SNP markers having an additional allele noted *, which are indels (InDel), that can't be managed by subsequent plink analyses.
 
 ## 2. Filters on annotations in the vcf file
-In bold (FS, SOR, MQ...): annotations that were analysed (figures with distribution of values), for consideration of use in the filters. Other annotations (DP, AC, AF) are indicated for reference.
+The general marker INFO fields (FS, SOR, MQ...) and the sample level annotations that were analysed by plotting their distribution of values in the dataset and/or used for filtering are indicated in bold in the lists 2.1 and 2.2. Other annotations (DP, AC, AF) are indicated for reference.
 
-MQRankSum and ReadPosRankSum (italics): were finally not used in the filters, as suggested by their distribution of values (see histograms and ECDF in Figures_S1_VcfCleanup).
+MQRankSum and ReadPosRankSum (italics): were finally not used in the filters, as suggested by the distribution of their values on the plots (see histograms and ECDF in Figures_S1_VcfCleanup and below).
 
-### 2.1. In the INFO field: SNP quality estimations
+### 2.1. In the INFO field: general SNP quality estimations
 * **FS** = FisherStrand; phred-scaled probability that there is strand bias at the site.
 * **SOR** = StrandOddsRatio: another way to estimate strand bias using a test similar to the symmetric odds ratio test.
 * **MQ** = RMSMappingQuality: root mean square mapping quality over all the reads at the site.
@@ -63,15 +63,28 @@ MQRankSum and ReadPosRankSum (italics): were finally not used in the filters, as
 * As we sequenced haploid drones, SNPs with a high proportion of heterozygote calls (**variable limit_het=0.01**) were filtered out. Some heterozygote calls (< 1%) had to be retained to avoid loosing too many markers. These were probably genotypiong errors and were set to missing.
 
 ## 4. SCRIPTS for filtering
-### 4.1. Calling script: run_vcfcleanup.sh
+
+[run_vcfcleanup.sh](Scripts_2_VcfCleanup/run_vcfcleanup.sh), will call the script:
+
+[vcf_cleanup.sh](Scripts_2_VcfCleanup/vcf_cleanup.sh), which will in turn call the scripts
+
+[diagnostic.r](Scripts_2_VcfCleanup/diagnostic.r)
+
+[filter.r](Scripts_2_VcfCleanup/filter.r)
+
+[filter_list.r](Scripts_2_VcfCleanup/filter_list.r)
+
+[count_phased_geno.py](Scripts_2_VcfCleanup/count_phased_geno.py)
+
+### 4.1. The calling script run_vcfcleanup.sh:
 * All editing of paths and values for filters are done in this script
-#### 4.1.1. General variables to edit: paths, number of authorised alleles
-* username=avignal
-* SCRIPTS='~/seqapipopOnHAV3_1/vcf_cleanup_scripts'
-* DIRIN='~/seqapipopOnHAV3_1/combineGVCFs/The870vcf'
-* DIROUT='~/seqapipopOnHAV3_1/vcf_cleanup'
-* VCFIN='MetaGenotypesCalled870_raw_snps.vcf.gz' #vcf file to filter
-* limit_allele=3 #accept up to three alleles
+#### 4.1.1. General variables to edit in the script: paths, number of authorised alleles
+* username=avignal # Deprecated
+* SCRIPTS='~/seqapipopOnHAV3_1/vcf_cleanup_scripts' #path to the scripts called
+* DIRIN='~/seqapipopOnHAV3_1/combineGVCFs/The870vcf' #path to directory containing the input vcf
+* DIROUT='~/seqapipopOnHAV3_1/vcf_cleanup' #path to output directory
+* VCFIN='MetaGenotypesCalled870_raw_snps.vcf.gz' #name of the vcf file to filter
+* limit_allele=3 #accept up to three alleles (edit to 2 or 4)
 
 #### 4.1.2. Variables to edit for quality filter threshold values :
 For all filter threshold set to x=-999, as filter threshold value the value will be calculated and assigned to the variable, so as to eliminate a proportion of the data fixed by the variables quantile_prob_above_threshold and quantile_prob_below_threshold.
@@ -168,7 +181,7 @@ module load bioinfo/samtools-1.8
 # end modules #################################################
 
 # parameters ##################################################
-username=avignal
+username=avignal #Deprecated
 SCRIPTS='~/seqapipopOnHAV3_1/vcf_cleanup_scripts' #path to scripts
 DIRIN='~/combineGVCFs/The870vcf' #path to directory containing the input vcf
 DIROUT='~/seqapipopOnHAV3_1/vcf_cleanup' #path to output directory

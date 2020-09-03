@@ -1,5 +1,7 @@
 # SeqApiPop analyses: from fastq files to vcf for 870 samples
 
+The corresponding html document and scripts are also found in [Github](https://github.com/avignal5/SeqApiPop)
+
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [1. Introduction](#1-introduction)
@@ -257,7 +259,8 @@ Some samples were sequenced in several runs. For each sample/run, there is one \
 
 #### 2.4.2. List of samples to merge
 ```bash
-ls FastqFromNG6/*_R1.fastq.gz | awk 'BEGIN{FS="/"}{print $6}' | awk 'BEGIN{FS=OFS="_"}{print $1,$2}' | sort | uniq -c | sort > ToMerge.list
+ls FastqFromNG6/*_R1.fastq.gz | awk 'BEGIN{FS="/"}{print $6}' | \
+    awk 'BEGIN{FS=OFS="_"}{print $1,$2}' | sort | uniq -c | sort > ToMerge.list
 awk '$1 > 1 {print $2}' ToMerge.list | awk 'BEGIN{FS="_"}{print $1}' > SamplesToMerge.list
 ```
 The list is in the form:
@@ -284,8 +287,10 @@ The script [callMerging.sh](Scripts_1_MappingCalling/callMerging.sh) will call:
 
 #------------------------------------------------------------------
 #EDIT FOR ACCESS TO BAM FILES
-SAMPLE_FILE=/work/project/cytogen/Alain/seqapipopOnHAV3_1/Merging/SamplesToMerge.list  #Names in the form OUE8
-STARTPOINT=/genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/*/*/mapping #Where the bam files are at the time : in sub-folders
+SAMPLE_FILE=/work/project/cytogen/Alain/seqapipopOnHAV3_1/Merging/SamplesToMerge.list
+#Names in the form OUE8
+STARTPOINT=/genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/*/*/mapping
+#Where the bam files are at the time : in sub-folders
 OUT=/work/project/cytogen/Alain/seqapipopOnHAV3_1/Merging/MergedBams
 REF=/home/gencel/vignal/save/Genomes/Abeille/HAv3_1_indexes/GCF_003254395.2_Amel_HAv3.1_genomic.fna
 CHROMOSOME=/home/gencel/vignal/save/Genomes/Abeille/HAv3_1_indexes/HAv3_1_Chromosomes.list
@@ -322,7 +327,8 @@ do
                 -J ${sample}_merging \
                 -o ${OUT}/logs/merging/${sample}_merging.o \
                 -e ${OUT}/logs/merging/${sample}_merging.e \
-                ${SCRIPT}/mergingGenologin.sh -b ${OUT}/${SAMPLE_MERGED}/mapping/${sample}.list -o ${OUT} -s ${SAMPLE_MERGED} -t 1
+                ${SCRIPT}/mergingGenologin.sh -b ${OUT}/${SAMPLE_MERGED}/mapping/ \
+                ${sample}.list -o ${OUT} -s ${SAMPLE_MERGED} -t 1
 
 done < ${SAMPLE_FILE}
 
@@ -397,7 +403,8 @@ do
 
 	sbatch --cpus-per-task=1 --mem-per-cpu=6G \
 		-J ${ID}_mapping -o ${OUT}/logs/${ID}_mapping.o -e ${OUT}/logs/${ID}_mapping.e \
-		${SCRIPT}/mappingAV_2019_Dec_RelanceBoots.sh -s ${ID} -i ${IN} -o ${OUT}/${ID} -p ${PLOIDY} -n ${N} -e ${OUT}/logs -R ${REF} -C ${CHROMOSOME} -U ${UNKNOWN}
+		${SCRIPT}/mappingAV_2019_Dec_RelanceBoots.sh -s ${ID} -i ${IN} -o ${OUT}/${ID} \
+		-p ${PLOIDY} -n ${N} -e ${OUT}/logs -R ${REF} -C ${CHROMOSOME} -U ${UNKNOWN}
 
 done < ${SAMPLE_FILE}
 
@@ -469,7 +476,8 @@ for i in `ls /genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/H
 do
         ID=`basename ${i}`      # give the name of the sample-population to map
         IN=`dirname ${i}`
-        sbatch -J test --mem=1G --wrap="module load -f /home/gencel/vignal/save/000_ProgramModules/program_module; \
+        sbatch -J test --mem=1G \
+        --wrap="module load -f /home/gencel/vignal/save/000_ProgramModules/program_module; \
         bcftools query -f '%CHROM\n' ${i} | \
         grep ^NC | uniq -c > \
         /work/project/cytogen/Alain/seqapipopOnHAV3_1/controlVcfs/${ID}.count"
@@ -587,7 +595,7 @@ done
 #### 3.1.5.1. Example for mitochondrial DNA
 
 ```bash
-~/seqapipopOnHAV3_1/combineGVCFs/The870vcf $ bcftools query -f '%CHROM\t%POS\n' MetaGenotypesNC_001566.1.g.vcf.gz | tail
+~/combineGVCFs/The870vcf $ bcftools query -f '%CHROM\t%POS\n' MetaGenotypesNC_001566.1.g.vcf.gz | tail
 NC_001566.1     16331
 NC_001566.1     16332
 NC_001566.1     16333
@@ -694,19 +702,20 @@ while getopts ":c:" opt; do
 done
 
 gatk --java-options "-Xmx80g" GenotypeGVCFs  \
-        -R /home/gencel/vignal/save/Genomes/Abeille/HAv3_1_indexes/GCF_003254395.2_Amel_HAv3.1_genomic.fna \
-        -V /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/MetaGenotypes${CHR}.g.vcf.gz \
-        --use-new-qual-calculator \
-        -O /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/MetaGenotypesCalled${CHR}.vcf.gz
+    -R /home/gencel/vignal/save/Genomes/Abeille/HAv3_1_indexes/GCF_003254395.2_Amel_HAv3.1_genomic.fna \
+    -V /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/MetaGenotypes${CHR}.g.vcf.gz \
+    --use-new-qual-calculator \
+    -O /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/MetaGenotypesCalled${CHR}.vcf.gz
 
 echo "Finnished: "`date`
 
 #end of file
 ```
 
+
 * Called by combineGVCFsHAV3_1_Lance_slurm.bash
 
-```{bash, eval = FALSE}
+```{bash}
 #!/bin/bash
 
 #genotypeGVCFsHAV3_1_Lance_slurm.bash
@@ -717,10 +726,11 @@ do
 mkdir -p /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/logsCalled
 
 sbatch --cpus-per-task=1 --mem-per-cpu=100G \
-        -J ${i}_genotAll \
-        -o /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/logsCalled/${i}_genotype.o \
-        -e /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/logsCalled/${i}_genotype.e \
-        /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/genotypeGVCFsHAV3_1_Called_slurm.bash -c ${i}
+    -J ${i}_genotAll \
+    -o /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/logsCalled/${i}_genotype.o \
+    -e /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/logsCalled/${i}_genotype.e \
+    /work/project/cytogen/Alain/seqapipopOnHAV3_1/combineGVCFs/The870vcf/\
+    genotypeGVCFsHAV3_1_Called_slurm.bash -c ${i}
 done
 ```
 
@@ -823,6 +833,4 @@ Sum     10601454
 ```
 
 * More than 10 million SNPs!
-* The bee genome is 250 Gb long => one SNP per 25 bp!
-
-end file
+* The bee genome is 250 Gb long => ~one SNP per 25 bp!
