@@ -188,7 +188,7 @@ empirical cumulative distribution function of SOR values
 
 
 
-##### 4.4.2 Running the filters: Venn diagrams and filtered vcf
+#### 4.4.2 Running the filters: Venn diagrams and filtered vcf
 Running the following script with run='filter_all', will perform the filtering and produce the Venn diagrams and filtered vcf file.
 
 ```bash
