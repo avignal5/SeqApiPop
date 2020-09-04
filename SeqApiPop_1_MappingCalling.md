@@ -5,6 +5,8 @@ The corresponding html document and scripts are also found in [Github](https://g
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [1. Introduction](#1-introduction)
+- [](#)
+- [2. Estimating mapped sequencing depth in BAM files](#2-estimating-mapped-sequencing-depth-in-bam-files)
 - [2. From fastq files to gvcf files](#2-from-fastq-files-to-gvcf-files)
 	- [2.1. Reference genome](#21-reference-genome)
 	- [2.2. fastq files](#22-fastq-files)
@@ -42,23 +44,26 @@ The corresponding html document and scripts are also found in [Github](https://g
 	- [2.5 controlling that all gvcf files are complete](#25-controlling-that-all-gvcf-files-are-complete)
 		- [2.5.1 Script controlVcfs.bash](#251-script-controlvcfsbash)
 		- [2.5.2. Check all went to the end](#252-check-all-went-to-the-end)
-- [3. Making the large vcf file with all 870 samples](#3-making-the-large-vcf-file-with-all-870-samples)
-	- [3.1 Combine gvcf files](#31-combine-gvcf-files)
-	- [3.1.1. Generate list of all samples for the combine script](#311-generate-list-of-all-samples-for-the-combine-script)
-	- [3.1.2 Write the combining scripts](#312-write-the-combining-scripts)
-	- [3.1.3 Run the combine script with combineGVCFsHAV3_1_Lance_slurm.bash](#313-run-the-combine-script-with-combinegvcfshav31lanceslurmbash)
-	- [3.1.4. Output](#314-output)
-	- [3.1.5. Check all went to the end](#315-check-all-went-to-the-end)
-		- [3.1.5.1. Example for mitochondrial DNA](#3151-example-for-mitochondrial-dna)
-		- [3.1.5.2. For all chromosomes:](#3152-for-all-chromosomes)
-	- [3.2. Genotype across the CombineGVCFs](#32-genotype-across-the-combinegvcfs)
-		- [3.2.1. Genotype](#321-genotype)
-		- [3.2.2. Check output](#322-check-output)
-	- [3.3 Concatenate vcf files](#33-concatenate-vcf-files)
-	- [3.4. Count variants per chromosomes](#34-count-variants-per-chromosomes)
-	- [3.5 Retain only SNPs](#35-retain-only-snps)
+- [3. Estimating mapped sequencing depth in BAM files](#3-estimating-mapped-sequencing-depth-in-bam-files)
+- [4. Making the large vcf file with all 870 samples](#4-making-the-large-vcf-file-with-all-870-samples)
+	- [4.1 Combine gvcf files](#41-combine-gvcf-files)
+	- [4.1.1. Generate list of all samples for the combine script](#411-generate-list-of-all-samples-for-the-combine-script)
+	- [4.1.2 Write the combining scripts](#412-write-the-combining-scripts)
+	- [4.1.3 Run the combine script with combineGVCFsHAV3_1_Lance_slurm.bash](#413-run-the-combine-script-with-combinegvcfshav31lanceslurmbash)
+	- [4.1.4. Output](#414-output)
+	- [4.1.5. Check all went to the end](#415-check-all-went-to-the-end)
+		- [4.1.5.1. Example for mitochondrial DNA](#4151-example-for-mitochondrial-dna)
+		- [4.1.5.2. For all chromosomes:](#4152-for-all-chromosomes)
+	- [4.2. Genotype across the Combined GVCF](#42-genotype-across-the-combined-gvcf)
+		- [4.2.1. Genotype](#421-genotype)
+		- [4.2.2. Check output](#422-check-output)
+	- [4.3 Concatenate vcf files](#43-concatenate-vcf-files)
+	- [4.4. Count variants per chromosomes](#44-count-variants-per-chromosomes)
+	- [4.5 Retain only SNPs](#45-retain-only-snps)
 
 <!-- /TOC -->
+
+
 
 ## 1. Introduction
 This document presents the analyses performed for obtaining the results presented in the paper *SeqApiPop* by Wragg et al (2020). Scripts and paths will have to be adapted to your local environment (SGE vs Slurm cluster; paths...)
@@ -68,6 +73,7 @@ The main scripts are in [Scripts_1_MappingCalling](Scripts_1_MappingCalling).
 Short scripts are directly described in the text.
 
 Versions of the software used:
+
 ```bash
 more program_module
 #%Module1.0###############################################################
@@ -85,6 +91,101 @@ module load bioinfo/plink-v1.90b5.3
 module load system/Python-3.6.3
 module load system/Java8
 module load system/R-3.4.3
+```
+
+## 2. Estimating mapped sequencing depth in BAM files
+
+* The sequencing depth for all SeqApiPop samples was estimated with the Mosdepth software
+* AllSeqApiPopBams.list is a list of paths to the bam files
+
+
+```{bash}
+#!/bin/bash
+
+#DepthMosDepthSeqApiPop.bash
+
+for i in `cat  ~/seqapipopOnHAV3_1/sequencingDepth/AllSeqApiPopBams.list`
+do
+        IFS='/' read -ra ARR1 <<< "$i"
+        SAMPLE=${ARR1[8]}
+        IFS="_" read -ra ARR2 <<< ${SAMPLE}
+        NAME=${ARR2[0]}
+        sbatch -J Depth --mem=2G --wrap="source /home/gencel/vignal/.bashrc;
+                conda activate seqDepth;
+                mosdepth -n  ${NAME} ${i};
+                conda deactivate"
+done
+```
+
+* for each bam, results are in a file BamName.mosdepth.summary.txt
+* results were then aggregated. Two output files:
+
+**allSummariesSeqApiPop.txt:**
+* With Sample name, chromosome name, chromosome length, bases mapped, mean depth, minimum depth, maximum depth
+
+|name   | chrom  | length | bases |  mean |   min  |   max|
+|:---|---:|---:|---:|---:|---:|---:|
+|BS16-19-M2  |    NC_037638.1  |   27754200    |    891809856    |   32.13 |  0   |    338224|
+|BS16-19-M2  |    NC_037639.1  |   16089512    |    522408492    |   32.47 |  0   |    1864|
+|BS16-19-M2  |    NC_037640.1  |   13619445    |    430268749    |   31.59 |  0   |    1481|
+|BS16-19-M2  |    NC_037641.1  |   13404451    |    417610967    |   31.15 |  0   |    8049|
+...
+
+
+**allSummariesSeqApiPop.txt:**
+* With Sample name, mean chromosome (autosome) depth, mitochondrial DNA depth, mitochondrial / autosomal depths ratios.
+
+|name  |  chrDepth    |    beeMitoDepth  |  beeMitoratio|
+:---|---:|---:|---:|
+|BS16-19-M2   |   31.29625    |    4500.92 | 143.8165914446619|
+|BS16-198-M1  |   33.228125   |    18661.06    |    561.6043637731591|
+|ITA7A |  17.368125   |    4261.76 | 245.37824318975137|
+|Sar21 |  19.418125   |    3597.02 | 185.24033602626412|
+|NCA35 |  12.55125    |    4693.06 | 373.91176177671554|
+...
+
+
+```{python3}
+#!/usr/bin/env python3
+# _*_ coding: Utf-8 _*_
+# coding: utf-8
+
+#aggregateSummariesSeqApiPop.py
+
+import re
+import glob
+import csv
+
+outFile = open("~/seqapipopOnHAV3_1/sequencingDepth/allSummariesSeqApiPop.txt",'w')
+outFile2 = open("~/seqapipopOnHAV3_1/sequencingDepth/compareDepthsSeqApiPop.txt",'w')
+
+titles = ["name","chrom", "length", "bases", "mean", "min", "max"]
+print("\t".join(titles), file=outFile)
+titles2 = ["name","chrDepth", "beeMitoDepth", "beeMitoratio"]
+print("\t".join(titles2), file=outFile2)
+
+for i in glob.glob("/work/project/cytogen/Alain/seqapipopOnHAV3_1/sequencingDepth/*summary*"):
+	pathArray = re.split("/",i)
+	nameLong = pathArray[7]
+	nameArray = re.split("\.",nameLong)
+	name = nameArray[0]
+	with open(i) as csvFile:
+		data=csv.reader(csvFile, delimiter = "\t")
+		sumDepths = 0
+		for row in data:
+			if re.search('^NC',row[0]):
+				out = [name, row[0],row[1], row[2], row[3], row[4],row[5]]
+				print("\t".join(out), file=outFile)
+				if row[0] == "NC_001566.1":
+					beeMitoDepth = float(row[3])
+					#print("BeeMito")
+				else:
+					sumDepths = sumDepths + float(row[3])
+					#print("Chr")
+		chrAverage = sumDepths / 16
+		out2 = [name,str(chrAverage),str(beeMitoDepth),str(beeMitoDepth / chrAverage)]
+		print("\t".join(out2), file=outFile2)
+
 ```
 
 ## 2. From fastq files to gvcf files
@@ -493,7 +594,102 @@ $ grep NC_001566.1 *.count | wc -l
 870
 ```
 
-## 3. Making the large vcf file with all 870 samples
+## 3. Estimating mapped sequencing depth in BAM files
+
+* The sequencing depth for all SeqApiPop samples was estimated with the Mosdepth software
+* AllSeqApiPopBams.list is a list of paths to the bam files
+
+
+```{bash}
+#!/bin/bash
+
+#DepthMosDepthSeqApiPop.bash
+
+for i in `cat  ~/seqapipopOnHAV3_1/sequencingDepth/AllSeqApiPopBams.list`
+do
+        IFS='/' read -ra ARR1 <<< "$i"
+        SAMPLE=${ARR1[8]}
+        IFS="_" read -ra ARR2 <<< ${SAMPLE}
+        NAME=${ARR2[0]}
+        sbatch -J Depth --mem=2G --wrap="source /home/gencel/vignal/.bashrc;
+                conda activate seqDepth;
+                mosdepth -n  ${NAME} ${i};
+                conda deactivate"
+done
+```
+
+* for each bam, results are in a file BamName.mosdepth.summary.txt
+* results were then aggregated. Two output files:
+
+**allSummariesSeqApiPop.txt:**
+* With Sample name, chromosome name, chromosome length, bases mapped, mean depth, minimum depth, maximum depth
+
+|name   | chrom  | length | bases |  mean |   min  |   max|
+|:---|---:|---:|---:|---:|---:|---:|
+|BS16-19-M2  |    NC_037638.1  |   27754200    |    891809856    |   32.13 |  0   |    338224|
+|BS16-19-M2  |    NC_037639.1  |   16089512    |    522408492    |   32.47 |  0   |    1864|
+|BS16-19-M2  |    NC_037640.1  |   13619445    |    430268749    |   31.59 |  0   |    1481|
+|BS16-19-M2  |    NC_037641.1  |   13404451    |    417610967    |   31.15 |  0   |    8049|
+...
+
+
+**allSummariesSeqApiPop.txt:**
+* With Sample name, mean chromosome (autosome) depth, mitochondrial DNA depth, mitochondrial / autosomal depths ratios.
+
+|name  |  chrDepth    |    beeMitoDepth  |  beeMitoratio|
+:---|---:|---:|---:|
+|BS16-19-M2   |   31.29625    |    4500.92 | 143.8165914446619|
+|BS16-198-M1  |   33.228125   |    18661.06    |    561.6043637731591|
+|ITA7A |  17.368125   |    4261.76 | 245.37824318975137|
+|Sar21 |  19.418125   |    3597.02 | 185.24033602626412|
+|NCA35 |  12.55125    |    4693.06 | 373.91176177671554|
+...
+
+
+```{python3}
+#!/usr/bin/env python3
+# _*_ coding: Utf-8 _*_
+# coding: utf-8
+
+#aggregateSummariesSeqApiPop.py
+
+import re
+import glob
+import csv
+
+outFile = open("~/seqapipopOnHAV3_1/sequencingDepth/allSummariesSeqApiPop.txt",'w')
+outFile2 = open("~/seqapipopOnHAV3_1/sequencingDepth/compareDepthsSeqApiPop.txt",'w')
+
+titles = ["name","chrom", "length", "bases", "mean", "min", "max"]
+print("\t".join(titles), file=outFile)
+titles2 = ["name","chrDepth", "beeMitoDepth", "beeMitoratio"]
+print("\t".join(titles2), file=outFile2)
+
+for i in glob.glob("/work/project/cytogen/Alain/seqapipopOnHAV3_1/sequencingDepth/*summary*"):
+	pathArray = re.split("/",i)
+	nameLong = pathArray[7]
+	nameArray = re.split("\.",nameLong)
+	name = nameArray[0]
+	with open(i) as csvFile:
+		data=csv.reader(csvFile, delimiter = "\t")
+		sumDepths = 0
+		for row in data:
+			if re.search('^NC',row[0]):
+				out = [name, row[0],row[1], row[2], row[3], row[4],row[5]]
+				print("\t".join(out), file=outFile)
+				if row[0] == "NC_001566.1":
+					beeMitoDepth = float(row[3])
+					#print("BeeMito")
+				else:
+					sumDepths = sumDepths + float(row[3])
+					#print("Chr")
+		chrAverage = sumDepths / 16
+		out2 = [name,str(chrAverage),str(beeMitoDepth),str(beeMitoDepth / chrAverage)]
+		print("\t".join(out2), file=outFile2)
+
+```
+
+## 4. Making the large vcf file with all 870 samples
 
 In theory, the GATK CombineGVCFs accepts a list of samples, but I couldn't get it to work. Terefore, the bash script for combining all gvcf files will have all files listed in the form:
 
@@ -504,9 +700,9 @@ In theory, the GATK CombineGVCFs accepts a list of samples, but I couldn't get i
 ...
 ```
 
-### 3.1 Combine gvcf files
+### 4.1 Combine gvcf files
 
-### 3.1.1. Generate list of all samples for the combine script
+### 4.1.1. Generate list of all samples for the combine script
 * All directories for all 870 samples are in ~/Haploid
 
 
@@ -521,7 +717,7 @@ $ head -3 temp.list
 --variant ~/Haploid/AOC18_GAGTGG_L002/calling/AOC18_GAGTGG_L002.g.vcf.gz \
 ```
 
-### 3.1.2 Write the combining scripts
+### 4.1.2 Write the combining scripts
 
 > Done by combining Head (combineScriptHead) and Tail (combineScriptTail) files to temp.list
 
@@ -562,7 +758,7 @@ echo "Finnished: "`date`
 cat combineScriptHead ../temp.list combineScriptTail > combineGVCFsHAV3_1_Called_slurm.bash
 ```
 
-### 3.1.3 Run the combine script with combineGVCFsHAV3_1_Lance_slurm.bash
+### 4.1.3 Run the combine script with combineGVCFsHAV3_1_Lance_slurm.bash
 
 * The script will work in parallel by combining the gvcf files for each chromosome separately
 
@@ -583,16 +779,16 @@ sbatch --cpus-per-task=1 --mem-per-cpu=100G \
 done
 ```
 
-### 3.1.4. Output
+### 4.1.4. Output
 
 * One file per chromosome: 16 autosomes, plus mitochondrial DNA, plus Unknown, in the form:
   - MetaGenotypesNC_001566.1.g.vcf.gz
 
-### 3.1.5. Check all went to the end
+### 4.1.5. Check all went to the end
 
 * The idea is to printout the last positions for each chromosome's gvcf file.
 
-#### 3.1.5.1. Example for mitochondrial DNA
+#### 4.1.5.1. Example for mitochondrial DNA
 
 ```bash
 ~/combineGVCFs/The870vcf $ bcftools query -f '%CHROM\t%POS\n' MetaGenotypesNC_001566.1.g.vcf.gz | tail
@@ -609,7 +805,7 @@ NC_001566.1     16343
 ```
 * OK, mitochondrial chromosome is 16471 bp long
 
-#### 3.1.5.2. For all chromosomes:
+#### 4.1.5.2. For all chromosomes:
 * script combineCheck.bash
 
 
@@ -683,8 +879,8 @@ NC_037653.1     7238532
 NC_001566.1     16343
 ```
 
-### 3.2. Genotype across the Combined GVCF
-#### 3.2.1. Genotype
+### 4.2. Genotype across the Combined GVCF
+#### 4.2.1. Genotype
 
 * Genotyping script genotypeGVCFsHAV3_1_Called_slurm.bash
 
@@ -734,13 +930,13 @@ sbatch --cpus-per-task=1 --mem-per-cpu=100G \
 done
 ```
 
-#### 3.2.2. Check output
+#### 4.2.2. Check output
 
 ```$ grep complete *_genotype.e```
 
 Should find a line for each chromosome
 
-### 3.3 Concatenate vcf files
+### 4.3 Concatenate vcf files
 
 
 ```bash
@@ -755,7 +951,7 @@ bcftools concat -f vcf.list -o MetaGenotypesCalled870.vcf.gz -O z
 tabix MetaGenotypesCalled870.vcf.gz
 ```
 
-### 3.4. Count variants per chromosomes
+### 4.4. Count variants per chromosomes
 
 ```bash
 #!/bin/bash
@@ -788,7 +984,7 @@ Sum     14990574
 
 * Almost 15 million variants!
 
-### 3.5 Retain only SNPs
+### 4.5 Retain only SNPs
 
 ```bash
 #!/bin/bash

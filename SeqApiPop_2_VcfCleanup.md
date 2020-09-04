@@ -1,6 +1,6 @@
 # SeqApiPop analyses: filter vcf file
 
-The corresponding html document and scripts are also found in [Github](https://github.com/avignal5/SeqApiPop)sqjlqscsql
+The corresponding html document and scripts are also found in [Github](https://github.com/avignal5/SeqApiPop)
 
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
@@ -176,24 +176,26 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
 # end of file
 ```
 <div style="page-break-after: always"></div>
+
 ##### 4.4.1.1 Mapping quality metrics: Stand Odds Ratio (SOR)
 
 ![](SeqApiPop_2_VcfCleanup.assets/plot_decision_SOR_Hist.pdf.png)
 
-Counts of markers according to SOR values. The blue dotted line indicated the threshold retained for filtering the vcf: SOR > 4.
+Counts of SNPs according to SOR values. The blue dotted line indicates the threshold retained for filtering the vcf: SOR > 4.
 
 -----------------------
 
 ![](SeqApiPop_2_VcfCleanup.assets/plot_decision_SOR_ECDF.pdf.png)
-empirical cumulative distribution function of SOR values.  The blue dotted line indicated the threshold used for filtering the vcf: SOR > 4.
+Empirical cumulative distribution function of SOR values.  The blue dotted line indicates the threshold used for filtering the vcf: SOR > 4.
 
 -----------------------
 
 <div style="page-break-after: always"></div>
+
 ##### 4.4.1.2 Mapping quality metrics: Fisher Strand (FS)
 
-![](SeqApiPop_2_VcfCleanup.assets/plot_decision_FS_Hist.pdf.png.png)
-Counts of markers according to FS values. The blue dotted line indicated the threshold used for filtering the vcf: FS < 61. X axis is on a log scale log(61)=1,785.
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_FS_Hist.png)
+Counts of SNPs according to FS values. The blue dotted line indicates the threshold used for filtering the vcf: FS < 61. X axis is on a log scale log(61)=1.785.
 
 -----------------------
 
@@ -202,15 +204,95 @@ Counts of markers according to FS values. The blue dotted line indicated the thr
 ##### 4.4.1.3 Mapping quality metrics: Mapping Quality (MQ)
 
 ![](SeqApiPop_2_VcfCleanup.assets/plot_decision_MQ_Hist.png)
-Counts of markers according to MQ values. The blue dotted line indicated the threshold used for filtering the vcf: MQ > 40.
+Counts of SNPs according to MQ values. The blue dotted line indicates the threshold used for filtering the vcf: MQ > 40.
 
 -----------------------
 
+<div style="page-break-after: always"></div>
 
+##### 4.4.1.4 Genotyping quality metrics: SNP quality (QUAL)
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_QUAL_hist.png)
+Counts of SNPs according to QUAL values. The blue dotted line indicates the threshold used for filtering the vcf: QUAL > 200. X axis is on a log scale log(200)=2.3.
+
+-----------------------
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_QUAL_ECDF.png)
+Empirical cumulative distribution function of QUAL values. The blue dotted line indicates the threshold used for filtering the vcf: QUAL > 200. X axis is on a log scale log(200)=2.3.
+
+-----------------------
 
 <div style="page-break-after: always"></div>
 
-#### 4.4.2 Running the filters: Venn diagrams and filtered vcf
+##### 4.4.1.5 Genotyping quality metrics: quality by depth (QD)
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_QD_hist.png)
+Counts of SNPs according to QUAL values. The blue dotted line indicates the threshold used for filtering the vcf: QD < 20.
+
+-----------------------
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_QD_ECDF.png)
+Empirical cumulative distribution function of QUAL. values. The blue dotted line indicates the threshold used for filtering the vcf: QD < 20.
+
+-----------------------
+
+<div style="page-break-after: always"></div>
+
+##### 4.4.1.6. Individual genotyping metrics: heterozygote calls
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_het_hist.png)
+Counts of SNPs according to proportion of heterozygote genotypes. The blue dotted line indicates the threshold used for filtering the vcf: heterozygote genotypes for a SNP must be < 1%.
+
+-----------------------
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_het_ECDF.png)
+Empirical cumulative distribution function of heterozygote genotypes. The blue dotted line indicates the threshold used for filtering the vcf: heterozygote genotypes for a SNP must be < 1%.
+
+-----------------------
+
+<div style="page-break-after: always"></div>
+
+##### 4.4.1.7. Individual genotyping metrics: missing genotypes
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_miss_hist.png)
+Counts of SNPs according to proportion of missing genotypes. The blue dotted line indicates the threshold used for filtering the vcf: missing genotypes for a SNP must be < 5%.
+
+-----------------------
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_miss_ECDF.png)
+Empirical cumulative distribution function of missing genotypes. The blue dotted line indicates the threshold used for filtering the vcf: missing genotypes for a SNP must be < 5%.
+
+-----------------------
+
+<div style="page-break-after: always"></div>
+
+##### 4.4.1.8. Individual genotyping metrics: genotype quality (QD)
+QD is a quality measure of each individual genotype. Our filter removes all SNPs having more than 20 % of genotypes having QD values < 10. In the remaining SNPs, genotypes with QD values < 10 are retained.
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_GQ_GQfiltered1.png)
+Counts of all individual GQ values for all SNPs. The blue dotted line indicates the threshold used: GQ < 10.
+
+-----------------------
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_GQ_GQfiltered2.png)
+Empirical cumulative distribution function of GQ values for all SNPs. The blue dotted line indicates the threshold used: GQ < 10.
+
+-----------------------
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_GQ_GQfiltered3.png)
+SNP counts according to proportion of genotypes with GQ < 10. The blue dotted line indicates the threshold used for filtering the vcf: proportion of genotypes for a SNP with GQ < 10%, must be < 20%.
+
+-----------------------
+
+![](SeqApiPop_2_VcfCleanup.assets/plot_decision_GQ_GQfiltered4.png)
+Empirical cumulative distribution function of SNP according to their proportion of genotypes with GQ < 10. The blue dotted line indicates the threshold used for filtering the vcf: proportion of genotypes for a SNP with GQ < 10%, must be < 20%.
+
+-----------------------
+
+##### 4.4.1.9 Notice on resulting missing data.
+although SNPs with more than 5% of missing data were filtered out, some markers may have more than 5% missing data due to the heterozygote calls still remaining after the heterozygote filter, that were set to missing. These can be removed if needed during further analyses.
+
+#### 4.4.2 Running the filters: generate Venn diagrams and filtered vcf
 Running the following script with run='filter_all', will perform the filtering and produce the Venn diagrams and filtered vcf file.
 
 ```bash
@@ -261,28 +343,50 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
 ```
 
 ## 5. results:
-* See the Venn diagrams for the selection of markers based on filtering criteria in Figures_S1_VcfCleanup.
-* The intersect in Venn_1 gives 10,057,214 SNPs, selected on strand biases and mapping quality metrics, with markers kept if all true:
-  - SOR < 4
-  - FS < 61
-  - MQ > 39
-* The intersect in Venn_2 gives 8,175,852 SNPs, selected on global genotyping quality metrics in addition to the previous selection. Markers kept:
-  - int1 (the selection from Venn_1)
-  - QUAL > 200
-  - QD > 20
-* The final intersect in Venn_3 gives 7,023,976 SNPs, selected on individual genotyping metrics in addition to the previous selection
-  - int2 (the selection from Venn_2)
-  - hererozygote calls < 1% : as we sequenced haploid drones, heterozygote calls represent genotyping errors or duplicated sequences. Note: all remaining heterozygote calls are set to missing.
-  - missing genotypes < 5%
-  - SNPs with < 20% genotypes having individual GQ < 10.
-  - allele number < 4
-* The final vcf file has just over 7 million SNPs : 7,023,976 in total.
 
-**The final vcf file has just over 7 million SNPs : 7,023,976 in total.**
+<p align="center">
+  <img src="SeqApiPop_2_VcfCleanup.assets/d450393d.png" />
+</p>
 
-**However, although SNPs with more than 5% of missing data were filtered out, some markers may have more than 5% missing data due to the hetozygote calls that were set to missing.**
+**Filters on mapping quality (MQ) and strand bias (FS and SOR) metrics.**
 
-**Markers can have up to 3 alleles**
+FS (FisherStrand): phred-scaled probability that there is strand mapping bias at the site; SOR (StrandOddsRatio): strand bias mapping estimate; MQ (RMSMappingQuality): root mean square mapping quality over all the reads at the site. The intercept of the 3 filters gives 10,057,214 SNPs, used for further filtering
+
+-----------------------
+
+<div style="page-break-after: always"></div>
+
+<p align="center">
+  <img src="SeqApiPop_2_VcfCleanup.assets/b5ea5cde.png" />
+</p>
+
+**Filters on genotyping quality.**
+
+Int1 is the intersect of the mapping quality filters. QUAL: Phred-scaled quality score for the assertion made in ALT: the more samples have the ATL allele, the higher the QUAL score. QD: quality score normalized by allele depth in which only informative reads are counted. The intercept of the 2 filters with the previous mapping quality filters gives 8,175,852 SNPs, used for further filtering (see figure 3).
+
+-----------------------
+
+<div style="page-break-after: always"></div>
+
+<p align="center">
+  <img src="SeqApiPop_2_VcfCleanup.assets/89e031ea.png" />
+</p>
+
+**Filters individual genotyping quality.**
+
+Int2 is the intersect of the previous filters. Filters are (i) het: proportion of heterozygote calls less than 1% for a SNP, as haploid drones were sequenced, the remaining heterozygote calls were set to missing; (ii) allele: less than 4 alleles for a SNP; (iii) miss: less than 5% missing data; (iv) GCfiltered: SNPs are removed if more than 20% samples have a genotyping quality (GQ) under 10. Note: although SNPs with more than 5% of missing data were filtered out, some markers may have more than 5% missing data due to the heterozygote calls that were set to missing.
+
+-----------------------
+* **Final vcf file:**
+  - **MetaGenotypesCalled870_raw_snps_allfilter.vcf**
+
+* **The final vcf file has just over 7 million SNPs : 7,023,976 in total.**
+
+* **However, although SNPs with more than 5% of missing data were filtered out, some markers may have more than 5% missing data due to the hetozygote calls that were set to missing.**
+
+* **Markers can have up to 3 alleles**
+
+**Number of SNPs per chromosome:**
 
 | Accession   |Chr| Nb. SNP |
 |:----------- |---:|-----:|
@@ -311,6 +415,9 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
 ### 6.1. change chromosome names to numbers
 * The chromosome names have to be numbers
 * Script to generate sed commands for all chromosomes: substForPlinkWrite.bash
+* vcf file with chromosomes as numbers:
+  - MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf
+
 ```bash
 #!/bin/bash
 
@@ -337,45 +444,12 @@ substForPlinkWrite.bash > substForPlink.bash
 sbatch substForPlink.bash
 ```
 
-### 6.2 Prepare bed, bim, fam files
+### 6.2 Prepare bed, bim, fam files and filter on missing data for SNPs and samples
 
-* --geno filters out all variants with missing call rates exceeding the provided value (default 0.1) to be removed
-* --mind does the same for samples.
-
-* /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/convertToBed.bash
-
-```bash
-#! /bin/bash
-
-#convertToBed.bash
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-VCFin=/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf
-VCFout=/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink
-plink --vcf ${VCFin} \
-  --keep-allele-order \
-  --a2-allele ${VCFin} 4 3 '#' \
-  --allow-no-sex \
-  --allow-extra-chr \
-  --chr-set 16 \
-  --set-missing-var-ids @:#[HAV3.1]\$1\$2 \
-  --chr 1-16 \
-  --mind 0.2 \
-  --out ${VCFout} \
-  --make-bed \
-  --missing
-```
-
-* Essential from MetaGenotypesCalled870_raw_snps_allfilter_plink.log
-	* 7023689 variants loaded from .bim file.
-		* There were a tolal of 7023976 after the filters, but the mitochondrial DNA (287 SNPs) was removed here.
-	* 1 sample removed due to missing genotype data (--mind 0.5). See MetaGenotypesCalled870_raw_snps_allfilter_plink.irem => ESP9.
-	* Total genotyping rate in remaining samples is 0.99126.
-	* 7023689 variants and 869 samples pass filters and QC.
-
-
-### 6.3 Finally, a more stringent filters on missing genotype data for SNPs and for samples was used:
+* **Final bed, bim, bam files:**
+  - **MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno.bim**
+  - **MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno.bam**
+  - **MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno.fam**
 
 * --maf filters out all variants with minor allele frequency below the provided threshold (default 0.01)
 * --geno filters out all variants with missing call rates exceeding the provided value (default 0.1) to be removed
@@ -385,9 +459,6 @@ plink --vcf ${VCFin} \
 
 File with the 7023689  variants:
 /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink
-
-
-More stringent on missing data in individuals:
 
 ```bash
 #! /bin/bash
@@ -413,10 +484,11 @@ plink --vcf ${VCFin} \
   --missing
 ```
 
-* 11075 variants removed due to missing genotype data (--geno)
+* 11075 variants removed due to missing genotype data (--geno).
 * 15 samples removed due to missing genotype data (--mind).
+* 7012614 variants and 855 samples pass filters and QC.
 
-**Samples removed: frequency of missing genotypes from the \*.imiss plink file:**
+**Samples removed: frequency of missing genotypes from the MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno.imiss plink file:**
 
 |ID | N_MISS | N_GENO | F_MISS|
 |:---|---:|---:|---:|
