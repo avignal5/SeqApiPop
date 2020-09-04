@@ -2,8 +2,13 @@
 
 The corresponding html document and scripts are also found in [Github](https://github.com/avignal5/SeqApiPop)
 
+
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
+- [1. Select the 629 samples for the plinkAnalyses](#1-select-the-629-samples-for-the-plinkanalyses)
+- [2. PCA with smartpca](#2-pca-with-smartpca)
+- [2.1 plot of PC1 and PC2 using all markers](#21-plot-of-pc1-and-pc2-using-all-markers)
+- [2.2 plot of SNP contributions to the PCs, according to MAF thresholds](#22-plot-of-snp-contributions-to-the-pcs-according-to-maf-thresholds)
 - [1. Defining haplotype blocks](#1-defining-haplotype-blocks)
 	- [1.1 Obtaining 5 first columns for further Analysis](#11-obtaining-5-first-columns-for-further-analysis)
 - [2. Preleminary filters on missing genotype data for SNPs and for samples:](#2-preleminary-filters-on-missing-genotype-data-for-snps-and-for-samples)
@@ -31,7 +36,6 @@ The corresponding html document and scripts are also found in [Github](https://g
 	- [5.2 results](#52-results)
 
 <!-- /TOC -->
-
 
 sbatch --wrap="smartpca -p SeqApiPop_628_MillionSNPs_LD03.par"
 
