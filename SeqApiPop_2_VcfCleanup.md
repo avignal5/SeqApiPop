@@ -18,12 +18,18 @@ The corresponding html document and scripts are also found in [Github](https://g
 			- [4.4.1.1 Mapping quality metrics: Stand Odds Ratio (SOR)](#4411-mapping-quality-metrics-stand-odds-ratio-sor)
 			- [4.4.1.2 Mapping quality metrics: Fisher Strand (FS)](#4412-mapping-quality-metrics-fisher-strand-fs)
 			- [4.4.1.3 Mapping quality metrics: Mapping Quality (MQ)](#4413-mapping-quality-metrics-mapping-quality-mq)
-		- [4.4.2 Running the filters: Venn diagrams and filtered vcf](#442-running-the-filters-venn-diagrams-and-filtered-vcf)
+			- [4.4.1.4 Genotyping quality metrics: SNP quality (QUAL)](#4414-genotyping-quality-metrics-snp-quality-qual)
+			- [4.4.1.5 Genotyping quality metrics: quality by depth (QD)](#4415-genotyping-quality-metrics-quality-by-depth-qd)
+			- [4.4.1.6. Individual genotyping metrics: heterozygote calls](#4416-individual-genotyping-metrics-heterozygote-calls)
+			- [4.4.1.7. Individual genotyping metrics: missing genotypes](#4417-individual-genotyping-metrics-missing-genotypes)
+			- [4.4.1.8. Individual genotyping metrics: genotype quality (QD)](#4418-individual-genotyping-metrics-genotype-quality-qd)
+			- [4.4.1.9 Notice on resulting missing data.](#4419-notice-on-resulting-missing-data)
+		- [4.4.2 Running the filters: generate Venn diagrams and filtered vcf](#442-running-the-filters-generate-venn-diagrams-and-filtered-vcf)
 - [5. results:](#5-results)
-- [6. Prepare bed, bim, fam files for plink, admixture, ...](#6-prepare-bed-bim-fam-files-for-plink-admixture-)
+- [6. Prepare bed, bim, fam files for plink, admixture, etc.](#6-prepare-bed-bim-fam-files-for-plink-admixture-etc)
 	- [6.1. change chromosome names to numbers](#61-change-chromosome-names-to-numbers)
-	- [6.2 Prepare bed, bim, fam files](#62-prepare-bed-bim-fam-files)
-	- [6.3 Finally, a more stringent filters on missing genotype data for SNPs and for samples was used:](#63-finally-a-more-stringent-filters-on-missing-genotype-data-for-snps-and-for-samples-was-used)
+	- [6.2 Prepare bed, bim, fam files and filter on missing data for SNPs and samples](#62-prepare-bed-bim-fam-files-and-filter-on-missing-data-for-snps-and-samples)
+- [7. Plots on sequencing depth and missing genotypes](#7-plots-on-sequencing-depth-and-missing-genotypes)
 
 <!-- /TOC -->
 
@@ -410,7 +416,7 @@ Int2 is the intersect of the previous filters. Filters are (i) het: proportion o
 | Sum   | Sum |  7023976 |
 
 
-## 6. Prepare bed, bim, fam files for plink, admixture, ...
+## 6. Prepare bed, bim, fam files for plink, admixture, etc.
 
 ### 6.1. change chromosome names to numbers
 * The chromosome names have to be numbers
@@ -507,3 +513,30 @@ plink --vcf ${VCFin} \
 |SavB3 | 706024 | 7023689 | 0.1005|
 |XC3 | 821334 | 7023689 | 0.1169|
 |XC4 | 747325 | 7023689 | 0.1064|
+
+## 7. Plots on sequencing depth and missing genotypes
+
+<div style="page-break-after: always"></div>
+
+<p align="center">
+  <img src="SeqApiPop_2_VcfCleanup.assets/SeqDepth_AV.png" />
+</p>
+
+**Sequencing depth and fraction of missing genotypes for all the 870 sequenced samples.**
+
+Blue: samples sequenced with the Illumina<sup>TM</sup> HiSeq instrument; green: samples sequenced with the Illumina<sup>TM</sup> NovaSeq instrument and red: samples sequenced with the Illumina<sup>TM</sup> HiSeq instrument in two or more runs. The horizontal line is the genotyping rate threshold applied to final dataset. Sequencing data could not be obtained from sample ESP9 and data for sample OUE8 was obtained from 3 sequencing runs.
+
+-----------------------
+
+<div style="page-break-after: always"></div>
+
+<p align="center">
+  <img src="SeqApiPop_2_VcfCleanup.assets/SeqDepthNoOutliers.png" />
+</p>
+
+
+**Sequencing depth and fraction of missing genotypes with outliers removed.**
+
+Blue: samples sequenced with the IlluminaTM HiSeq instrument; green: samples sequenced with the IlluminaTM NovaSeq instrument and red: samples sequenced with the IlluminaTM HiSeq instrument in two or more runs. The horizontal line is the genotyping rate threshold applied to final dataset.
+
+-----------------------

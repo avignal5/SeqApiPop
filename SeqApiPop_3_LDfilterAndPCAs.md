@@ -5,46 +5,53 @@ The corresponding html document and scripts are also found in [Github](https://g
 
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [1. Select the 629 samples for the plinkAnalyses](#1-select-the-629-samples-for-the-plinkanalyses)
-- [2. PCA with smartpca](#2-pca-with-smartpca)
-- [2.1 plot of PC1 and PC2 using all markers](#21-plot-of-pc1-and-pc2-using-all-markers)
-- [2.2 plot of SNP contributions to the PCs, according to MAF thresholds](#22-plot-of-snp-contributions-to-the-pcs-according-to-maf-thresholds)
 - [1. Defining haplotype blocks](#1-defining-haplotype-blocks)
-	- [1.1 Obtaining 5 first columns for further Analysis](#11-obtaining-5-first-columns-for-further-analysis)
-- [2. Preleminary filters on missing genotype data for SNPs and for samples:](#2-preleminary-filters-on-missing-genotype-data-for-snps-and-for-samples)
-- [3. Filters on linkage desiquilibrium (LD), using different LD values and windows in plink and PCA](#3-filters-on-linkage-desiquilibrium-ld-using-different-ld-values-and-windows-in-plink-and-pca)
-	- [3.1. PCA on complete dataset](#31-pca-on-complete-dataset)
-	- [3.2. PCAs after LD filters : Use a window of the size of the largest chromosome ~ 1,000,000 SNPs](#32-pcas-after-ld-filters-use-a-window-of-the-size-of-the-largest-chromosome-1000000-snps)
-		- [3.2.1. LD = 0.9](#321-ld-09)
-		- [3.2.2. LD = 0.5](#322-ld-05)
-		- [3.2.3. LD = 0.3](#323-ld-03)
-		- [3.2.4. LD = 0.2](#324-ld-02)
-		- [3.2.5. LD = 0.15](#325-ld-015)
-		- [3.2.6. LD = 0.1](#326-ld-01)
-		- [3.2.7. LD = 0.05](#327-ld-005)
-	- [3.3. The same LD values were also run with smaller size windows](#33-the-same-ld-values-were-also-run-with-smaller-size-windows)
-		- [3.3.1. For instance 1 Mb window and LD = 0.05:](#331-for-instance-1-mb-window-and-ld-005)
-	- [3.4. Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.](#34-figure-showing-the-number-of-snps-selected-for-different-combinations-of-ld-thresholds-and-window-sizes)
-		- [3.4.1 Make a table fot the plot](#341-make-a-table-fot-the-plot)
-		- [Plot data](#plot-data)
-	- [3.5. Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks](#35-figures-showing-the-influence-of-ld-thresholds-and-window-sizes-on-the-selection-of-snps-in-haplotype-blocks)
-- [4. Plot the PCAs](#4-plot-the-pcas)
-	- [4.1. Copy with standard names](#41-copy-with-standard-names)
-	- [For the moment, the best compromise seems to be LD = 0.02 ; window = whole chromosome.](#for-the-moment-the-best-compromise-seems-to-be-ld-002-window-whole-chromosome)
-- [5. Same analysis, removing the NCA, MOSAR and redundant bees from the same hive](#5-same-analysis-removing-the-nca-mosar-and-redundant-bees-from-the-same-hive)
-	- [5.1 Example script](#51-example-script)
-	- [5.2 results](#52-results)
+	- [1.1 Obtaining 5 first columns for further Analyses](#11-obtaining-5-first-columns-for-further-analyses)
+- [2. Select the 629 samples for the plinkAnalyses](#2-select-the-629-samples-for-the-plinkanalyses)
+- [3. PCA with smartpca](#3-pca-with-smartpca)
+- [3.1. plot of PC1 and PC2 using all markers](#31-plot-of-pc1-and-pc2-using-all-markers)
+- [3.2. Influence of MAF filtering thresholds on dataset's global SNP contributions](#32-influence-of-maf-filtering-thresholds-on-datasets-global-snp-contributions)
+- [3.3. SNP contributions along the genome](#33-snp-contributions-along-the-genome)
+	- [3.3.1. Genome-wide plots](#331-genome-wide-plots)
+	- [3.3.2. Plots in haplotype haploBlocks](#332-plots-in-haplotype-haploblocks)
+- [4. LD pruning](#4-ld-pruning)
+	- [4.1. SNP density plots and window size selection](#41-snp-density-plots-and-window-size-selection)
+	- [4.2. LD pruning and effects on PCA](#42-ld-pruning-and-effects-on-pca)
+		- [4.2.1. Generating datasets (plink)](#421-generating-datasets-plink)
+		- [4.2.2. Effect of LD pruning on SNP contributions to the PCs](#422-effect-of-ld-pruning-on-snp-contributions-to-the-pcs)
+		- [4.2.3. Effect of LD pruning on PCA](#423-effect-of-ld-pruning-on-pca)
 
 <!-- /TOC -->
 
-sbatch --wrap="smartpca -p SeqApiPop_628_MillionSNPs_LD03.par"
+## 1. Defining haplotype blocks
 
+The plink blocks command was used to detect haplotype blocks in the genome, based on the complete dataset of 870 samples.
 
-## 1. Select the 629 samples for the plinkAnalyses
+```bash
+#! /bin/bash
+
+#haplotypeBlocks5000.sh
+
+module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
+
+NAME=haplotypeBlocks5000
+
+plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
+  --out ${NAME} \
+  --blocks no-pheno-req no-small-max-span \
+  --blocks-max-kb 5000
+```
+
+### 1.1 Obtaining 5 first columns for further Analyses
+```bash
+ awk '{print $1,$2,$3,$4,$5}' haplotypeBlocks5000.blocks.det > haplotypeBlocks5000.blocks.cols
+```
+
+## 2. Select the 629 samples for the plinkAnalyses
 
 * The vcf file contains a total of 870 samples
-  - All samples are of the genetic types found in western Europe and therefore were included for SNP detection based on technical metrics.
-  - A list of 629 samples will be selected, by removing:
+  - All 870 samples are of the genetic types found in western Europe and therefore were included for SNP detection based on technical metrics.
+  - A list of 629 samples will be selected for the genetic analyses, by removing:
     - Duplicate samples from a same hive
 	- Samples from experimental subpopulations
 	- Samples from another study
@@ -57,7 +64,10 @@ sbatch --wrap="smartpca -p SeqApiPop_628_MillionSNPs_LD03.par"
     - Only marlers with MAF > 0.01
   - SeqApiPop_629_maf005
     - Only marlers with MAF > 0.05
-
+  - SeqApiPop_629_maf01
+    - Only marlers with MAF > 0.1
+  - SeqApiPop_629_maf02
+    - Only marlers with MAF > 0.2
 
 
 ```{bash}
@@ -69,8 +79,8 @@ module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
 
 NAME=SeqApiPop_629
 
-VCFin=~/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf
-VCFout=~/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/${NAME}
+VCFin=~/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf
+VCFout=~/plinkAnalyses/WindowSNPs/${NAME}
 plink --vcf ${VCFin} \
   --keep-allele-order \
   --keep /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/Unique629.list \
@@ -100,7 +110,7 @@ plink --bfile ${VCFout} \
 * 7012891 variants and 629 samples pass filters and QC
 * This number is slightly different than when using all 870 samples, due to variations in the number of variants removed due to missing genotypind data.
 
-## 2. PCA with smartpca
+## 3. PCA with smartpca
 * script paramFile.bash to generate smartpca parameter files:
 * PREFIX = prefix of the plink bed file to read
 
@@ -140,7 +150,7 @@ sbatch --wrap="smartpca -p SeqApiPop_629.par"
 
 <div style="page-break-after: always"></div>
 
-## 2.1 plot of PC1 and PC2 using all markers
+## 3.1. plot of PC1 and PC2 using all markers
 
 * From the log of smartpca, with SeqApiPop_629.* only:
   - number of samples used: 629 number of snps used: 7012891
@@ -149,22 +159,70 @@ sbatch --wrap="smartpca -p SeqApiPop_629.par"
   - This could be an effect of SNPs only present in the individuals that were removed from the original 870 sample dataset.
 * Plot of PC1 and PC2 with all markers and samples from reference populations (file SeqApiPop_629.eigs):
 
+**Reference populations:**
+
+Population  |  Reference for
+--|--
+Mellifera Ouessant  |  *Apis mellifera mellifera*
+Mellifera Ouessant  |  *Apis mellifera mellifera*
+Mellifera Ouessant  |  *Apis mellifera mellifera*
+Mellifera Ouessant  |  *Apis mellifera mellifera*
+Mellifera Ouessant  |  *Apis mellifera mellifera*
+Iberica Spain|  *Apis mellifera iberica*
+Ligustica Italy|  *Apis mellifera ligustica*
+Carnica Slovenia|  *Apis mellifera carnica*
+Carnica Germany|  *Apis mellifera carnica*
+Carnica Switzerland|  *Apis mellifera carnica*
+Carnica France  |*Apis mellifera carnica*
+Carnica Poland  |*Apis mellifera carnica*
+Caucasica  |  *Apis mellifera caucasica*
+
 ![](SeqApiPop_3_LDfilterAndPCAs.assets/All7millionSNPs.png)
 **Principal component analysis for all SNPs: reference populations.**
-The first component separates clearly the A. m. mellifera and A. m. iberica on one side and the A. m. ligustica, A. m. carnica and A. m. caucasica on the other. The second distinguishes the A. m. caucasica from the rest.
+The first component representing 47.4 % of the variance separates clearly the A. m. mellifera and A. m. iberica on one side and the A. m. ligustica, A. m. carnica and A. m. caucasica on the other. The second component representing 13.8 % of the variance distinguishes the A. m. caucasica from the rest. The other dimensions represent each 5.2 % or less of the variance (see table below) and the separation of other populations or groups of populations on these subsequent principal component dimensions is not clear (data not shown)
 
 -----------------------
 
 <div style="page-break-after: always"></div>
 
-## 2.2 plot of SNP contributions to the PCs, according to MAF thresholds
 
-* The output files \*.SeqApiPop_629.snpeigs are used to plot the SNP contributions to the principal components.
+**Contribution to the variance of PC1 to PC20**
+
+PC | percentVar
+---|---
+PC1 	| 	47.417834
+PC2 	| 	13.826587
+PC3 	| 	5.212604
+PC4 	| 	3.096361
+PC5 	| 	3.075373
+PC6 	| 	2.996320
+PC7 	| 	2.943851
+PC8 	| 	2.505911
+PC9 	| 	2.098054
+PC10 	| 	1.807726
+PC11 	| 	1.719579
+PC12 	| 	1.613242
+PC13 	| 	1.512502
+PC14 	| 	1.488016
+PC15 	| 	1.483119
+PC16 	| 	1.481020
+PC17 	| 	1.454436
+PC18 	| 	1.430650
+PC19 	| 	1.422255
+PC20 	| 	1.414560
+
+<div style="page-break-after: always"></div>
+
+## 3.2. Influence of MAF filtering thresholds on dataset's global SNP contributions
+
+* The output files \*.SeqApiPop_629.snpeigs from the smartpca analysis are used to plot the SNP contributions to the principal components.
   - SeqApiPop_629.snpeigs
   - SeqApiPop_629_maf001.snpeigs
   - SeqApiPop_629_maf005.snpeigs
   - SeqApiPop_629_maf01.snpeigs
   - SeqApiPop_629_maf02.snpeigs
+
+<div style="page-break-after: always"></div>
 
 ![](SeqApiPop_3_LDfilterAndPCAs.assets/DifferentMAFsAllSNPsAllGenomePCs123_Paper.png)
 **Contributions of SNPs to PCs 1, 2 and 3, according to MAF filters.**
@@ -173,417 +231,115 @@ With no MAF filtering (red lines), there is a high proportion of SNPs contributi
 
 -----------------------
 
+A large majority of the ~7 million SNPs contribute only very little to PC1 and
+the proportion of markers contributing to PCs 2 and 3 is even much smaller.
+only a very small proportion contribute slightly to PCs 2 and 3. Clearly, datasets of SNPs with MAF > 0.01 or MAF > 0.05 are sufficient to allow a higher proportion of markers contributing to the PCs, with a notable increase of SNPs contributing to PC2 and PC3. To avoid losing too many potential population-specific markers present at low frequency in the data, we chose to use the dataset of 3,285,296 SNPs having MAF > 0.01 for subsequent analyses.
+
+## 3.3. SNP contributions along the genome
+### 3.3.1. Genome-wide plots
+
+Inspection of the contributions of SNPs along the genome revealed a striking feature of our dataset, with regions whose size can be as large as one or more Mb, in which a very large majority of the SNPs have a contribution to PC1 superior to the average maximum contribution of all markers. These regions coincide with large haplotype blocks detected with plink. The largest on these blocks spans 3.6 Mb on chromosome 11, which is more than 1.5 % of the honeybee genome size, and four others on chromosomes 4, 7 and 9 are larger than 1 Mb
+
+<div style="page-break-after: always"></div>
+
+![](SeqApiPop_3_LDfilterAndPCAs.assets/SNPloadingsAllMaf0O1PaperPC1.png)
+
+**Contribution of SNPs with MAF > 0.01 to PC1.** Yellow backgrounds correspond to haplotype blocks detected with the plink blocks function, of size larger than 100 kb. SNP contributions were estimated with SMARTPCA.
+
+<div style="page-break-after: always"></div>
+
+![](SeqApiPop_3_LDfilterAndPCAs.assets/SNPloadingsAllMaf0O1PaperPC2.png)
+
+**Contribution of SNPs with MAF > 0.01 to PC2.** Yellow backgrounds correspond to haplotype blocks detected with the plink blocks function, of size larger than 100 kb. SNP contributions were estimated with SMARTPCA.
+
+<div style="page-break-after: always"></div>
+
+### 3.3.2. Plots in haplotype haploBlocks
+
+In most haplotype blocks, almost all SNPs have a very strong contribution to PC1, thus suggesting that these blocks are characterized by long haplotypes specific to either the *A. m. mellifera* and *A. m. iberica* on one side and to all other subspecies on the other. In one region on chromosome 12, representing a part of a haplotype block, almost all SNPs have a very strong contributin to PC2, suggesting that this region is characterized by a long haplotype specific to the *A. m. caucasica* subspecies.
+
+![](SeqApiPop_3_LDfilterAndPCAs.assets/Fig1_SNPDensitiesChr11Chr12Maf001dpi300.png)
+
+**Contribution of SNPs to PC1 and PC2 in haplotype blocks on chromosomes 11 and 12.** Left: contribution of the individual SNPs to PC1 and PC2. The yellow background indicates haplotype blocks of size larger than 100 kb, as detected by the block command of plink. The red vertical lines delimit the regions selected for plotting SNP contribution densities in the corresponding figures on the right. Right: density plots of SNP contributions to PC1 and 2; blue line: SNPs from all the genome; red line: SNPs from the selected region. In the haplotype block larger than 3 Mb found on chromosome 11, the vast majority of SNPs contribute strongly to PC1, while the contributions to PC2 is virtually inexistent. In a portion of the haplotype block found on chromosome 12, the proportion of SNPs contributing to PC1 is contrarywise lower than average, whereas a majority of SNPs contribution very strongly to PC2.
+
+<div style="page-break-after: always"></div>
+
+![](SeqApiPop_3_LDfilterAndPCAs.assets/SNPDensitiesManyChrs3b.png)
+
+**Contribution of SNPs to PC1 in haplotype blocks.** Some of the other most striking haplotype blocks are shown, showing their very strong contribution to PC1. Left: contribution of the individual SNPs to PC1. The yellow background indicates haplotype blocks of size larger than 100 kb, as detected by the block command of plink. The red vertical lines delimit the regions selected for plotting SNP contribution densities in the corresponding figures on the right. Right: density plots of SNP contributions to PC1; blue: SNPs from all the genome; red: SNPs from the selected region.
+
+## 4. LD pruning
+
+Due to the presence of large haplotype blocks with almost all SNPs having exceptionally high contributions to PC1, we carefully monitored these regions while selecting a suitable threshold for the LD pruning step.
+
+The number of SNPs used in a window for LD pruning was determined such as most windows would correspond to a physical size of 100 kb. The number of SNPs in 100 kb windows vary along the genome and is lower in the haplotype blocks.
+
+### 4.1. SNP density plots and window size selection
+
 <div style="page-break-after: always"></div>
 
 
-#OLD TEXT
+![](SeqApiPop_3_LDfilterAndPCAs.assets/SNPdensitiesMAF3.png)
 
-## 1. Defining haplotype blocks
+**Plot of SNP densities along the genome in 100 kb windows.** Plots represent SNP counts for all markers and after MAF filters. Grey backgrounds correspond to haplotype blocks detected with the plink blocks function, of size larger than 100 kb.
 
-```bash
+<div style="page-break-after: always"></div>
+
+![](SeqApiPop_3_LDfilterAndPCAs.assets/SNPdensity100kbMode.png)
+
+**Density plots of the number of SNPs per 100 kb windows.** The vertical lines represent the value of the mode for the distribution. The mode of the number of SNPs per 100 kb for the dataset of 3,285,296 SNPs with MAF > 0.01 is 1749 (supplementary figures 11 and 12), so pruning was done with a window size of 1749 SNPs and 175 bp (10 %) overlap.
+
+<div style="page-break-after: always"></div>
+
+![](SeqApiPop_3_LDfilterAndPCAs.assets/SNPdensity100kbMode2.png)
+
+**Density plots of the number of SNPs per 100 kb windows.** The vertical lines represent the value of the mode for the distribution. The mode of the number of SNPs per 100 kb for the dataset of 3,285,296 SNPs with MAF > 0.01 is 1749 (supplementary figures 11 and 12), so pruning was done with a window size of 1749 SNPs and 175 bp (10 %) overlap.
+
+### 4.2. LD pruning and effects on PCA
+
+#### 4.2.1. Generating datasets (plink)
+
+```{bash}
 #! /bin/bash
 
-#haplotypeBlocks5000.sh
+#select629_LD.bash
 
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
 
-NAME=haplotypeBlocks5000
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out ${NAME} \
-  --blocks no-pheno-req no-small-max-span \
-  --blocks-max-kb 5000
-```
-
-### 1.1 Obtaining 5 first columns for further Analysis
-```bash
- awk '{print $1,$2,$3,$4,$5}' haplotypeBlocks5000.blocks.det > haplotypeBlocks5000.blocks.cols
-```
-
-## 2. Preleminary filters on missing genotype data for SNPs and for samples:
-
-* --maf filters out all variants with minor allele frequency below the provided threshold (default 0.01)
-* --geno filters out all variants with missing call rates exceeding the provided value (default 0.1) to be removed
-* --mind does the same for samples.
-* --indep-pairwise 500000 50000 0.9 : LD filters out variants with LD > 0.9, on a window of 500000 SNPs, a sliding window of 50000.
-
-
-File with the 7023689  variants:
-/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink
-
-
-More stringent on missing data in individuals:
-
-```bash
-#! /bin/bash
-
-#convertToBed.bash
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-VCFin=/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf
-VCFout=/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno
-plink --vcf ${VCFin} \
-  --keep-allele-order \
-  --a2-allele ${VCFin} 4 3 '#' \
-  --allow-no-sex \
-  --allow-extra-chr \
-  --chr-set 16 \
-  --set-missing-var-ids @:#[HAV3.1]\$1\$2 \
-  --chr 1-16 \
-  --mind 0.1 \
-  --geno 0.1 \
-  --out ${VCFout} \
-  --make-bed \
-  --missing
-```
-
-* 11075 variants removed due to missing genotype data (--geno)
-* 15 samples removed due to missing genotype data (--mind).
-
-**Samples removed: frequency of missing genotypes from the \*.imiss plink file:**
-
-|ID | N_MISS | N_GENO | F_MISS|
-|:---|---:|---:|---:|
-|AOC4 | 1270404 | 7023689 | 0.1809|
-|BR12 | 1269182 | 7023689 | 0.1807|
-|BR1A | 1253619 | 7023689 | 0.1785|
-|ESP9 | 6208279 | 7023689 | 0.8839|
-|JFM21 | 725846 | 7023689 | 0.1033|
-|JFM24 | 817509 | 7023689 | 0.1164|
-|JFM3 | 875208 | 7023689 | 0.1246|
-|JFM5 | 830181 | 7023689 | 0.1182|
-|KF21 | 722607 | 7023689 | 0.1029|
-|OUE8 | 831427 | 7023689 | 0.1184|
-|PM1 | 969888 | 7023689 | 0.1381|
-|SavB1 | 823422 | 7023689 | 0.1172|
-|SavB3 | 706024 | 7023689 | 0.1005|
-|XC3 | 821334 | 7023689 | 0.1169|
-|XC4 | 747325 | 7023689 | 0.1064|
-
-
-## 3. Filters on linkage desiquilibrium (LD), using different LD values and windows in plink and PCA
-
-
-### 3.1. PCA on complete dataset
-
-```bash
-#! /bin/bash
-
-#7millionSNPs.sh
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-NAME=7millionSNPs
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out PCA_${NAME} \
-  --pca
-```
-
-### 3.2. PCAs after LD filters : Use a window of the size of the largest chromosome ~ 1,000,000 SNPs
-
-#### 3.2.1. LD = 0.9
-
-```bash
-#! /bin/bash
-
-#LD09_Chromosomes.sh
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-NAME=LD09_Chromosomes
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out ${NAME} \
-  --indep-pairwise 1000000 100000 0.9
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-    --out ${NAME}_pruned \
-	--extract ${NAME}.prune.in \
-	--make-bed
-
-plink --bfile ${NAME}_pruned \
-  --out PCA_${NAME} \
-  --pca
-```
-
-#### 3.2.2. LD = 0.5
-
-```bash
-#! /bin/bash
-
-#LD05_Chromosomes.sh
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-NAME=LD05_Chromosomes
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out ${NAME} \
-  --indep-pairwise 1000000 100000 0.5
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-    --out ${NAME}_pruned \
-	--extract ${NAME}.prune.in \
-	--make-bed
-
-plink --bfile ${NAME}_pruned \
-  --out PCA_${NAME} \
-  --pca
-```
-
-#### 3.2.3. LD = 0.3
-
-```bash
-#! /bin/bash
-
-#LD03_Chromosomes.sh
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-NAME=LD03_Chromosomes
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out ${NAME} \
-  --indep-pairwise 1000000 100000 0.3
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-    --out ${NAME}_pruned \
-	--extract ${NAME}.prune.in \
-	--make-bed
-
-plink --bfile ${NAME}_pruned \
-  --out PCA_${NAME} \
-  --pca
-```
-
-#### 3.2.4. LD = 0.2
-
-```bash
-#! /bin/bash
-
-#LD02_Chromosomes.sh
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-NAME=LD02_Chromosomes
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out ${NAME} \
-  --indep-pairwise 1000000 100000 0.2
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-    --out ${NAME}_pruned \
-	--extract ${NAME}.prune.in \
-	--make-bed
-
-plink --bfile ${NAME}_pruned \
-  --out PCA_${NAME} \
-  --pca
-```
-
-#### 3.2.5. LD = 0.15
-
-```bash
-#! /bin/bash
-
-#LD015_Chromosomes.sh
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-NAME=LD015_Chromosomes
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out ${NAME} \
-  --indep-pairwise 1000000 100000 0.15
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-    --out ${NAME}_pruned \
-	--extract ${NAME}.prune.in \
-	--make-bed
-
-plink --bfile ${NAME}_pruned \
-  --out PCA_${NAME} \
-  --pca
-```
-
-#### 3.2.6. LD = 0.1
-
-```bash
-#! /bin/bash
-
-#LD01_Chromosomes.sh
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-NAME=LD01_Chromosomes
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out ${NAME} \
-  --indep-pairwise 1000000 100000 0.1
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-    --out ${NAME}_pruned \
-	--extract ${NAME}.prune.in \
-	--make-bed
-
-plink --bfile ${NAME}_pruned \
-  --out PCA_${NAME} \
-  --pca
-```
-
-#### 3.2.7. LD = 0.05
-
-```bash
-#! /bin/bash
-
-#LD005_Chromosomes.sh
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-NAME=LD005_Chromosomes
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out ${NAME} \
-  --indep-pairwise 1000000 100000 0.05
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-    --out ${NAME}_pruned \
-	--extract ${NAME}.prune.in \
-	--make-bed
-
-plink --bfile ${NAME}_pruned \
-  --out PCA_${NAME} \
-  --pca
-```
-
-### 3.3. The same LD values were also run with smaller size windows
-* 1 Mb
-* 500 kb
-* 100 kb
-* 50 kb
-* 10 kb
-
-#### 3.3.1. For instance 1 Mb window and LD = 0.05:
-
-```bash
-#! /bin/bash
-
-#LD005_Chromosomes.sh
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-NAME=LD005_Chromosomes
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out ${NAME} \
-  --indep-pairwise 1000 kb 100 0.05
-
-plink --bfile ../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-    --out ${NAME}_pruned \
-        --extract ${NAME}.prune.in \
-        --make-bed
-
-plink --bfile ${NAME}_pruned \
-  --out PCA_${NAME} \
-  --pca
-```
-
-### 3.4. Figure showing the number of SNPs selected for different combinations of LD thresholds and window sizes.
-#### 3.4.1 Make a table fot the plot
-
-* Table : LD threshold, window size, SNPs retained
-* Done by extracting the data from the logfiles of the plink --pca runs
-
-```bash
-#!/bin/bash
-grep 'variants loaded' PCAsWind*/PCA*log | sed s'/variants loaded from .bim file.//' | sed 's/:/\t/' | sed 's/_/\t/g' | sed 's/\//\t/' | sed 's/PCAsWindow//' | grep -v 7millionSNPs
- | awk 'BEGIN{OFS="\t"}{print $1,$3,$5}' > SNPselectionStats2.txt
-```
-
-#### Plot data
-* script PlotHaplosLDChrRegion.py
-
-![SNPs selected by LD values and window sizes.](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.png)
-![downloadable pdf version](/Figures_3_LD_PCA/NbSNPsFunctionLD_Window.pdf)
-
-### 3.5. Figures showing the influence of LD thresholds and window sizes on the selection of SNPs in haplotype blocks
-* Areas shaded in grey are the haplotype blocks > 100 as detected by plink.
-* Whole genome: ![SNP numbers along the genome after LD pruning.](Figures_3_LD_PCA/PlotAllChrsCompareWindBin05.pdf)
-  - Figure generated with PlotHaplosLDselCompWind.py
-* And a selection of 4 haplotype haploBlocks
-  - Figures generated with PlotHaplosLDChrRegion.py
-
-![Chromosome 2](/Figures_3_LDfilterAndPCA/PlotChrs2_0_3_Mb.pdf)
-![Chromosome 4](/Figures_3_LDfilterAndPCA/PlotChrs4_0_3_Mb.pdf)
-![Chromosome 7](/Figures_3_LDfilterAndPCA/PlotChrs7_3_8_Mb.pdf)
-![Chromosome 11](/Figures_3_LDfilterAndPCA/PlotChrs11_3_8_Mb.pdf)
-
-* SNP counts in large haplotypeblocks are lower.
-* Larger window sizes for LD pruning eliminate more SNPs in large haplotype blocks
-
-## 4. Plot the PCAs
-### 4.1. Copy with standard names
-* run the script below for the *.log, *.eigenvec and *.eigenval files
-
-```bash
-#!/bin/bash
-
-#copyRename.#!/usr/bin/env bash
-#Copies the outputs from plink --PCA and renames with window size and LD thresholds used
-
-for i in `ls ../PCA*/PCA*eigenval | grep Wind | grep -v 7millionSNPs`
-do
-WIND=${i%/*}
-WIND=${WIND#*/}
-WIND=${WIND/PCAsWindow}
-LD=${i%_*}
-LD=${LD#*_}
-NAME=PCA_${WIND}_${LD}.eigenval
-cp ${i} ${NAME}
-done
-```
-* all in /Users/avignal/Documents/Stats/2019_SeqApiPop_HAv3_1/PCAsAll
-* Then run the script Plot6PCAs.py
-
-### For the moment, the best compromise seems to be LD = 0.02 ; window = whole chromosome.
-
-
-## 5. Same analysis, removing the NCA, MOSAR and redundant bees from the same hive
-
-### 5.1 Example script
-
-```bash
-#! /bin/bash
-
-#LD015_Chromosomes.sh
-
-module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-
-NAME=LD015_Chromosomes
-
-plink --bfile ../../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --keep ../DataSamplesNoNcaNoMosarNoDuplicates.list \
-  --out ${NAME} \
-  --indep-pairwise 100 kb 10 0.15
-
-plink --bfile ../../MetaGenotypesCalled870_raw_snps_allfilter_plink_missIndGeno \
-  --out ${NAME}_pruned \
-  --keep ../DataSamplesNoNcaNoMosarNoDuplicates.list \
-  --extract ${NAME}.prune.in \
+NAME1=SeqApiPop_629_maf001
+NAME2=SeqApiPop_629_maf001_LD03
+
+plink --bfile ${NAME1} \
+  --out ${NAME2} \
+  --indep-pairwise 1749 175 0.3
+
+plink --bfile ${NAME1} \
+  --out ${NAME2}_pruned \
+  --extract ${NAME2}.prune.in \
   --make-bed
 
-plink --bfile ${NAME}_pruned \
-  --out PCA_${NAME} \
+plink --bfile ${NAME2}_pruned \
+  --out PCA_${NAME2} \
   --pca
 ```
 
-* all in /Users/avignal/Documents/Stats/2019_SeqApiPop_HAv3_1/PCAsNoNcaNoMosarNoDuplicates
-* Then run the script Plot6PCAs.py for plotting reference populations from 6 different run conditions (LD values, Window sizes) to one page.
-* Run script Plot6PCAsAllPops.py for plotting all populations for one condition in 6 plots to one page.
+<div style="page-break-after: always"></div>
 
-### 5.2 results
+#### 4.2.2. Effect of LD pruning on SNP contributions to the PCs
 
-* Filtering with LD 0.3 gives a good compromise between keeping the C-type, M-type and caucasicas separate, while separating subpopulations (especially of melliferas). The number of SNPs retained varies between 800,000 (window of the size of a chromosome) and 2.5 million (10 kb window), but the pattern is stable over the different window sizes.
-* Filtering with LD 0.2 (window of the size of a chromosome) further separates the mellifera groups (400,000 SNPs retained), but smaller windows tend to separate the ibericas before the caucasicas, a pattern which is not representative of the "all SNPs" pattern of 3 main sub-populations.
+![](SeqApiPop_3_LDfilterAndPCAs.assets/LdFilters2_paper.png)
+
+**Effect of LD pruning on SNP contribution to PC1.** Top: on the whole genome; bottom: on the 3 Mb haplotype block on chromosome 11 having a very strong contribution to PC1. LD pruning allows to increase the proportion of markers genome wide contributing to the variance, while efficiently removing the excess of contributing markers in the haplotype block.
+
+<div style="page-break-after: always"></div>
+
+
+![](SeqApiPop_3_LDfilterAndPCAs.assets/SNPDensitiesChr11LdFilter.png)
+
+**Figure 14: Effect of LD pruning on SNP density in haplotype blocks.** Left: contribution of the individual SNPs to principal component 1 or 2 on chromosome 11, between positions 2 and 7 Mb before (top) or after LD pruning with LD = 0.3 (bottom); the yellow background indicates haplotype blocks of size larger than 100 kb, as detected by the block command of plink. Right: densities of the SNP contributions to PC1 and 2 with and without LD pruning; blue: SNPs from all the genome; red: SNPs from the haplotype block region detected with plink. The LD = 0.3 pruning value removes most markers from the haplotype block and the density distribution of SNP contributions within the haplotype block now matches that of the whole genome, for both PC1 and PC2..
+
+#### 4.2.3. Effect of LD pruning on PCA
+
+![](SeqApiPop_3_LDfilterAndPCAs.assets/SupplementaryLDsWindowsPC1PC2Maf001PaperOK.png)
+**Effect of LD pruning on PC1 and PC2.**
+Only the reference populations are shown. PC1 and PC2 are plotted with datasets resulting from different LD pruning settings. Down to LD = 3, the overall pattern of variance as observed when using all markers is preserved, while it is lost when using lower values. At LD = 0.3, the separation of A. m. mellifera and A. m. iberica populations is improved.
