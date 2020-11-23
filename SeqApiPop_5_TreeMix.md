@@ -41,6 +41,20 @@ Corsica AOC12 0 0 0 -9
 Corsica AOC14 0 0 0 -9
 ```
 
+Background > 80 | Nb. Samples
+---|---
+None         | 239
+Carnica      |  97
+RoyalJelly   |  54
+Corsica      |  43
+Ouessant     |  40
+Buckfast     |  34
+Colonsay     |  28
+Ligustica    |  27
+Mellifera    |  25
+Iberica      |  23
+Caucasica    |  19
+
 ### All samples with > 90 pure backgrounds, plus Corsica:
 
 ```bash
@@ -57,20 +71,19 @@ AOC12 AOC12 0 0 0 -9
 AOC14 AOC14 0 0 0 -9
 
 ```
-Background80 | Nb. Samples
+Background > 90 | Nb. Samples
 ---|---
-None         | 239
-Carnica      |  97
-RoyalJelly   |  54
+None         | 305
+Carnica      |  76
+RoyalJelly   |  47
 Corsica      |  43
-Ouessant     |  40
-Buckfast     |  34
+Ouessant     |  39
 Colonsay     |  28
-Ligustica    |  27
-Mellifera    |  25
-Iberica      |  23
-Caucasica    |  19
-
+Ligustica    |  26
+Mellifera    |  19
+Caucasica    |  17
+Buckfast     |  16
+Iberica      |  13
 
 ### Select samples
 
