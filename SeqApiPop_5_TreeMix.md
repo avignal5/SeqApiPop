@@ -6,7 +6,9 @@
 	- [1. Files](#1-files)
 		- [Lists for selection:](#lists-for-selection)
 		- [All samples with > 80 pure backgrounds, plus Corsica:](#all-samples-with-80-pure-backgrounds-plus-corsica)
+			- [Added Added the samples admixed for populations that are close, such as iberica = iberica + mellifera](#added-added-the-samples-admixed-for-populations-that-are-close-such-as-iberica-iberica-mellifera)
 		- [All samples with > 90 pure backgrounds, plus Corsica:](#all-samples-with-90-pure-backgrounds-plus-corsica)
+			- [Added Added the samples admixed for populations that are close, such as iberica = iberica + mellifera](#added-added-the-samples-admixed-for-populations-that-are-close-such-as-iberica-iberica-mellifera)
 		- [Select samples](#select-samples)
 - [! /bin/bash](#-binbash)
 - [! /bin/bash](#-binbash)
@@ -15,6 +17,9 @@
 		- [Run Treemix](#run-treemix)
 - [!/bin/bash](#binbash)
 		- [Estimate the number of migrations with R package OptM](#estimate-the-number-of-migrations-with-r-package-optm)
+		- [Estimate mean trees:](#estimate-mean-trees)
+- [!/bin/bash](#binbash)
+		- [Plot TREES](#plot-trees)
 
 <!-- /TOC -->
 
@@ -55,6 +60,22 @@ Mellifera    |  25
 Iberica      |  23
 Caucasica    |  19
 
+#### Added Added the samples admixed for populations that are close, such as iberica = iberica + mellifera
+
+Background by type > 80 | Nb. Samples
+---|---
+None         | 186
+Carnica      |  97
+Mellifera    ||  70
+RoyalJelly   |  54
+Corsica      |  43
+Ouessant     |  40
+Buckfast     |  34
+Iberica      |  31
+Colonsay     |  28
+Ligustica    |  27
+Caucasica    |  19
+
 ### All samples with > 90 pure backgrounds, plus Corsica:
 
 ```bash
@@ -85,6 +106,22 @@ Caucasica    |  17
 Buckfast     |  16
 Iberica      |  13
 
+#### Added Added the samples admixed for populations that are close, such as iberica = iberica + mellifera
+
+Background by type > 90 | Nb. Samples
+---|---
+None         | 253
+Carnica      |  76
+Mellifera    |  53
+RoyalJelly   |  47
+Corsica      |  43
+Ouessant     |  39
+Iberica      |  31
+Colonsay     |  28
+Ligustica    |  26
+Caucasica    |  17
+Buckfast     |  16
+
 ### Select samples
 
 selectRefPopInds90.bash
@@ -102,6 +139,8 @@ plink --bfile ../SeqApiPop_629 --out SeqApiPop_324_9pops_AllSNPs --keep SeqApiPo
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
 plink --bfile ../_maf001_LD03_prune --out SeqApiPop_324_9pops_AllSNPs --keep SeqApiPop_324_9pops.list --make-bed
 ```
+
+Once the selections done, the fam files are over written, so the information on the populations is lost. Must generate them again!
 
 ### Calculate frequencies and format for TreeMix
 
@@ -145,5 +184,33 @@ done
 ```R
 Bootstraps90.optm = optM("/Users/avignal/GenotoulBigWork/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90")
 
-plot_optM(Bootstraps80.optm, method = "Evanno")
+plot_optM(Bootstraps90.optm, method = "Evanno")
 ```
+
+### Estimate mean trees:
+
+SumTrees: Phylogenetic Tree Summarization and Annotation, from the DendroPy plylogenetic package
+
+sumtreeStats.bash
+
+```bash
+#!/bin/bash
+
+for i in $(seq 0 9)
+do
+	rm -f /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outMeanM${i}.tre
+	touch /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outMeanM${i}.tre
+	for j in `ls /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outstemM${i}_rep*.treeout.gz`
+	do
+	gunzip -c ${j} | head --l 1 >> /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outMeanM${i}.tre
+	done
+	sumtrees.py /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outMeanM${i}.tre \
+		> /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/summaryM${i}.tre
+done
+```
+
+### Plot TREES
+
+library(RColorBrewer)
+library(R.utils)
+plot_tree("/Users/avignal/GenotoulBigWork/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outstemM1_rep69")
