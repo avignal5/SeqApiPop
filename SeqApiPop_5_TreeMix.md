@@ -6,9 +6,9 @@
 	- [1. Files](#1-files)
 		- [Lists for selection:](#lists-for-selection)
 		- [All samples with > 80 pure backgrounds, plus Corsica:](#all-samples-with-80-pure-backgrounds-plus-corsica)
-			- [Added Added the samples admixed for populations that are close, such as iberica = iberica + mellifera](#added-added-the-samples-admixed-for-populations-that-are-close-such-as-iberica-iberica-mellifera)
+			- [Added the samples admixed for populations that are close, such as iberica = iberica + mellifera](#added-the-samples-admixed-for-populations-that-are-close-such-as-iberica-iberica-mellifera)
 		- [All samples with > 90 pure backgrounds, plus Corsica:](#all-samples-with-90-pure-backgrounds-plus-corsica)
-			- [Added Added the samples admixed for populations that are close, such as iberica = iberica + mellifera](#added-added-the-samples-admixed-for-populations-that-are-close-such-as-iberica-iberica-mellifera)
+			- [Added the samples admixed for populations that are close, such as iberica = iberica + mellifera](#added-the-samples-admixed-for-populations-that-are-close-such-as-iberica-iberica-mellifera)
 		- [Select samples](#select-samples)
 - [! /bin/bash](#-binbash)
 - [! /bin/bash](#-binbash)
@@ -60,7 +60,7 @@ Mellifera    |  25
 Iberica      |  23
 Caucasica    |  19
 
-#### Added Added the samples admixed for populations that are close, such as iberica = iberica + mellifera
+#### Added the samples admixed for populations that are close, such as iberica = iberica + mellifera
 
 Background by type > 80 | Nb. Samples
 ---|---
@@ -106,7 +106,7 @@ Caucasica    |  17
 Buckfast     |  16
 Iberica      |  13
 
-#### Added Added the samples admixed for populations that are close, such as iberica = iberica + mellifera
+#### Added the samples admixed for populations that are close, such as iberica = iberica + mellifera
 
 Background by type > 90 | Nb. Samples
 ---|---
