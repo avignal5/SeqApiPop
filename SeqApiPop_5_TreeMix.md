@@ -66,7 +66,7 @@ Background by type > 80 | Nb. Samples
 ---|---
 None         | 186
 Carnica      |  97
-Mellifera    ||  70
+Mellifera    |  70
 RoyalJelly   |  54
 Corsica      |  43
 Ouessant     |  40
