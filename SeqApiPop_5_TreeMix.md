@@ -217,7 +217,7 @@ library(RColorBrewer)
 #library(R.utils)
 source("../plotting_funcs.R")
 
-path = "/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/"
+path = "~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/"
 
 
 for (i in 0:9){
