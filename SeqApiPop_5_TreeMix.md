@@ -19,6 +19,11 @@
 		- [Estimate the number of migrations with R package OptM](#estimate-the-number-of-migrations-with-r-package-optm)
 		- [Plot Treemix trees](#plot-treemix-trees)
 - [library(R.utils) Curiosly, seems not to work when R.utils loaded](#libraryrutils-curiosly-seems-not-to-work-when-rutils-loaded)
+		- [Done for all Treemix outputs:](#done-for-all-treemix-outputs)
+- [!/bin/bash](#binbash)
+- [plotTrees.bash](#plottreesbash)
+- [plotAll.R](#plotallr)
+- [library(R.utils)](#libraryrutils)
 		- [Estimate mean trees:](#estimate-mean-trees)
 - [!/bin/bash](#binbash)
 
@@ -193,6 +198,36 @@ plot_optM(Bootstraps90.optm, method = "Evanno")
 library(RColorBrewer)
 #library(R.utils) Curiosly, seems not to work when R.utils loaded
 plot_tree("/Users/avignal/GenotoulBigWork/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outstemM1_rep69")
+
+### Done for all Treemix outputs:
+
+```binbash
+#!/bin/bash
+
+#plotTrees.bash
+
+Rscript plotAll.R
+```
+
+```R
+#plotAll.R
+
+library(RColorBrewer)
+#library(R.utils)
+source("../plotting_funcs.R")
+
+path = "/work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/"
+
+
+for (i in 0:9){
+    for (j in 0:99){
+        pdf(paste(path,"treePlotM",i,"rep",j,".pdf",sep=""))
+        plot_tree(paste(path,"outstemM",i,"_rep",j, sep = ""))
+        dev.off()
+    }
+}
+```
+
 
 ### Estimate mean trees:
 
