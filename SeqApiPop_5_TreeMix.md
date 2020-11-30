@@ -194,10 +194,11 @@ plot_optM(Bootstraps90.optm, method = "Evanno")
 ```
 
 ### Plot Treemix trees
-
+```R
 library(RColorBrewer)
 #library(R.utils) Curiosly, seems not to work when R.utils loaded
 plot_tree("/Users/avignal/GenotoulBigWork/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outstemM1_rep69")
+```
 
 ### Done for all Treemix outputs:
 
