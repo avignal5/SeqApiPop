@@ -17,9 +17,10 @@
 		- [Run Treemix](#run-treemix)
 - [!/bin/bash](#binbash)
 		- [Estimate the number of migrations with R package OptM](#estimate-the-number-of-migrations-with-r-package-optm)
+		- [Plot Treemix trees](#plot-treemix-trees)
+- [library(R.utils) Curiosly, seems not to work when R.utils loaded](#libraryrutils-curiosly-seems-not-to-work-when-rutils-loaded)
 		- [Estimate mean trees:](#estimate-mean-trees)
 - [!/bin/bash](#binbash)
-		- [Plot TREES](#plot-trees)
 
 <!-- /TOC -->
 
@@ -137,14 +138,14 @@ plink --bfile ../SeqApiPop_629 --out SeqApiPop_324_9pops_AllSNPs --keep SeqApiPo
 ```bash
 #! /bin/bash
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-plink --bfile ../_maf001_LD03_prune --out SeqApiPop_324_9pops_AllSNPs --keep SeqApiPop_324_9pops.list --make-bed
+plink --bfile ../SeqApiPop_629_maf001_LD03_pruned --out SeqApiPop_324_9pops --keep SeqApiPop_324_9pops.list --make-bed
 ```
 
 Once the selections done, the fam files are over written, so the information on the populations is lost. Must generate them again!
 
 ### Calculate frequencies and format for TreeMix
 
-calculateFrequencies90.bash
+calculateFrequencies.bash
 
 ```bash
 #! /bin/bash
@@ -187,6 +188,12 @@ Bootstraps90.optm = optM("/Users/avignal/GenotoulBigWork/seqapipopOnHAV3_1/seqAp
 plot_optM(Bootstraps90.optm, method = "Evanno")
 ```
 
+### Plot Treemix trees
+
+library(RColorBrewer)
+#library(R.utils) Curiosly, seems not to work when R.utils loaded
+plot_tree("/Users/avignal/GenotoulBigWork/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outstemM1_rep69")
+
 ### Estimate mean trees:
 
 SumTrees: Phylogenetic Tree Summarization and Annotation, from the DendroPy plylogenetic package
@@ -209,8 +216,4 @@ do
 done
 ```
 
-### Plot TREES
-
-library(RColorBrewer)
-library(R.utils)
-plot_tree("/Users/avignal/GenotoulBigWork/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outstemM1_rep69")
+Plot with figtree
