@@ -63,7 +63,12 @@ done
 
 for i in `ls | grep ^SeqApiPop`
 do
-grep CV ${i}/*log* | awk -v var="$i" 'BEGIN{OFS="\t"}{print $3,$4, var}' | sed 's/(K=//' | sed 's/)://' | awk 'BEGIN{FS="_";OFS="\t"}{print $1,$4,$3}' | awk 'BEGIN{OFS="\t"}{print $1,$2,$4,$5}'
+grep CV ${i}/*log* | \
+    awk -v var="$i" 'BEGIN{OFS="\t"}{print $3,$4, var}' | \
+    sed 's/(K=//' | \
+    sed 's/)://' | \
+    awk 'BEGIN{FS="_";OFS="\t"}{print $1,$4,$3}' | \
+    awk 'BEGIN{OFS="\t"}{print $1,$2,$4,$5}'
 done
 ```
 
@@ -99,9 +104,12 @@ done
 ### From Admixture Qfiles to Pong format
 
 ```bash
-ls  ../Qfiles/* | grep LD0 | awk 'BEGIN{FS="/";OFS="\t"}{print $3, $0}' | awk 'BEGIN{FS=".";OFS="\t"}{print $1"_"$2"_"$3"_"$4, $2, ".."$6"."$7"."$8"."$9}' | awk 'BEGIN{OFS="\t"}{print $1,$2,$3}'
+ls  ../Qfiles/* | \
+    grep LD0 | \
+    awk 'BEGIN{FS="/";OFS="\t"}{print $3, $0}' | \
+    awk 'BEGIN{FS=".";OFS="\t"}{print $1"_"$2"_"$3"_"$4, $2, ".."$6"."$7"."$8"."$9}' | \
+    awk 'BEGIN{OFS="\t"}{print $1,$2,$3}'
 ```
-
 
 conda activate Py27Pong
 pong -m Q_fileMaps_MAF001LDO3_K2K12_50samples -n popOrder.list -i ind2pop.list
