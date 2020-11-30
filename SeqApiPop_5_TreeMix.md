@@ -188,7 +188,7 @@ done
 ### Estimate the number of migrations with R package OptM
 
 ```R
-Bootstraps90.optm = optM("/Users/avignal/GenotoulBigWork/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90")
+Bootstraps90.optm = optM("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90")
 
 plot_optM(Bootstraps90.optm, method = "Evanno")
 ```
@@ -197,7 +197,7 @@ plot_optM(Bootstraps90.optm, method = "Evanno")
 ```R
 library(RColorBrewer)
 #library(R.utils) Curiosly, seems not to work when R.utils loaded
-plot_tree("/Users/avignal/GenotoulBigWork/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outstemM1_rep69")
+plot_tree("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outstemM1_rep69")
 ```
 
 ### Done for all Treemix outputs:
