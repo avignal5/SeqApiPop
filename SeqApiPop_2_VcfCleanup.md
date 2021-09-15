@@ -177,7 +177,8 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
 		--wrap="${SCRIPTS}/vcf_cleanup.sh ${username} ${SCRIPTS} ${DIRIN} ${DIROUT} ${VCFIN} \
 		${limit_allele} ${limit_FS} ${limit_SOR} ${limit_MQ} ${limit_MQRankSum} ${limit_ReadPosRankSum} \
 		${limit_QUAL} ${limit_QD} ${limit_GQ} ${limit_miss} ${limit_het} ${limit_GQfiltered} \
-		${quantile_prob_above_threshold} ${quantile_prob_below_threshold} ${kept_above_threshold} ${kept_below_threshold} ${run}"
+		${quantile_prob_above_threshold} ${quantile_prob_below_threshold} \
+		${kept_above_threshold} ${kept_below_threshold} ${run}"
 
 # end of file
 ```
@@ -343,7 +344,8 @@ sbatch -W -J vcf_cleanup -o ${DIROUT}/log/vcf_cleanup.o -e ${DIROUT}/log/vcf_cle
 		--wrap="${SCRIPTS}/vcf_cleanup.sh ${username} ${SCRIPTS} ${DIRIN} ${DIROUT} ${VCFIN} \
 		${limit_allele} ${limit_FS} ${limit_SOR} ${limit_MQ} ${limit_MQRankSum} ${limit_ReadPosRankSum} \
 		${limit_QUAL} ${limit_QD} ${limit_GQ} ${limit_miss} ${limit_het} ${limit_GQfiltered} \
-		${quantile_prob_above_threshold} ${quantile_prob_below_threshold} ${kept_above_threshold} ${kept_below_threshold} ${run}"
+		${quantile_prob_above_threshold} ${quantile_prob_below_threshold} \
+		${kept_above_threshold} ${kept_below_threshold} ${run}"
 
 # end of file
 ```
@@ -431,14 +433,16 @@ Int2 is the intersect of the previous filters. Filters are (i) het: proportion o
 
 printf "#!/bin/bash\n\n"
 
-printf "cp /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses
+printf "cp ~/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/
+MetaGenotypesCalled870_raw_snps_allfilter.vcf ~/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses
 /MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf\n\n"
 
 j=0
 for i in `cut -f1 /home/gencel/vignal/save/Genomes/Abeille/HAv3_1_indexes/HAv3_1_Chromosomes.list`
 do
 j=$((j+1))
-printf "sed -i \'s/${i}/${j}/g\' /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf\n"
+printf "sed -i \'s/${i}/${j}/g\' ~/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/
+plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf\n"
 done
 ```
 

@@ -83,7 +83,7 @@ VCFin=~/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf
 VCFout=~/plinkAnalyses/WindowSNPs/${NAME}
 plink --vcf ${VCFin} \
   --keep-allele-order \
-  --keep /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/Unique629.list \
+  --keep ~/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/Unique629.list \
   --a2-allele ${VCFin} 4 3 '#' \
   --allow-no-sex \
   --allow-extra-chr \

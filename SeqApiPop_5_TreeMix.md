@@ -26,6 +26,12 @@
 - [library(R.utils)](#libraryrutils)
 		- [Estimate mean trees:](#estimate-mean-trees)
 - [!/bin/bash](#binbash)
+	- [Phylogenetic tree with individuals](#phylogenetic-tree-with-individuals)
+		- [Convert to R-readeable data1](#convert-to-r-readeable-data1)
+- [!/bin/bash](#binbash)
+- [recodeForR.bash](#recodeforrbash)
+		- [Import in R and analyses](#import-in-r-and-analyses)
+- [plot.phylo(SeqApiPopTree, typ="fan", cex=0.7) #Type: one of "phylogram" (the default), "cladogram", "fan", "unrooted", "radial"](#plotphyloseqapipoptree-typfan-cex07-type-one-of-phylogram-the-default-cladogram-fan-unrooted-radial)
 
 <!-- /TOC -->
 
@@ -63,70 +69,10 @@ Buckfast     |  34
 Colonsay     |  28
 Ligustica    |  27
 Mellifera    |  25
-Iberica      |  23
-Caucasica    |  19
+Iberiensis      |  23
+Caucasia    |  19
 
-#### Added the samples admixed for populations that are close, such as iberica = iberica + mellifera
 
-Background by type > 80 | Nb. Samples
----|---
-None         | 186
-Carnica      |  97
-Mellifera    |  70
-RoyalJelly   |  54
-Corsica      |  43
-Ouessant     |  40
-Buckfast     |  34
-Iberica      |  31
-Colonsay     |  28
-Ligustica    |  27
-Caucasica    |  19
-
-### All samples with > 90 pure backgrounds, plus Corsica:
-
-```bash
-$ head SeqApiPop_324_9pops.list
-AOC10 AOC10
-AOC11 AOC11
-AOC12 AOC12
-AOC14 AOC14
-
-$ head SeqApiPop_324_9pops.fam
-AOC10 AOC10 0 0 0 -9
-AOC11 AOC11 0 0 0 -9
-AOC12 AOC12 0 0 0 -9
-AOC14 AOC14 0 0 0 -9
-
-```
-Background > 90 | Nb. Samples
----|---
-None         | 305
-Carnica      |  76
-RoyalJelly   |  47
-Corsica      |  43
-Ouessant     |  39
-Colonsay     |  28
-Ligustica    |  26
-Mellifera    |  19
-Caucasica    |  17
-Buckfast     |  16
-Iberica      |  13
-
-#### Added the samples admixed for populations that are close, such as iberica = iberica + mellifera
-
-Background by type > 90 | Nb. Samples
----|---
-None         | 253
-Carnica      |  76
-Mellifera    |  53
-RoyalJelly   |  47
-Corsica      |  43
-Ouessant     |  39
-Iberica      |  31
-Colonsay     |  28
-Ligustica    |  26
-Caucasica    |  17
-Buckfast     |  16
 
 ### Select samples
 
@@ -136,14 +82,20 @@ selectRefPopInds90.bash
 ```bash
 #! /bin/bash
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-plink --bfile ../SeqApiPop_629 --out SeqApiPop_324_9pops_AllSNPs --keep SeqApiPop_324_9pops.list --make-bed
+plink --bfile ../SeqApiPop_629 \
+		--out SeqApiPop_324_9pops_AllSNPs \
+		--keep SeqApiPop_324_9pops.list \
+		--make-bed
 ```
 
 * SNPs selected on MAF and LD
 ```bash
 #! /bin/bash
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
-plink --bfile ../SeqApiPop_629_maf001_LD03_pruned --out SeqApiPop_324_9pops --keep SeqApiPop_324_9pops.list --make-bed
+plink --bfile ../SeqApiPop_629_maf001_LD03_pruned \
+		--out SeqApiPop_324_9pops \
+		--keep SeqApiPop_324_9pops.list \
+		--make-bed
 ```
 
 Once the selections done, the fam files are over written, so the information on the populations is lost. Must generate them again!
@@ -157,17 +109,23 @@ calculateFrequencies.bash
 
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
 
-plink --bfile SeqApiPop_324_9pops --freq --missing --family --out SeqApiPop_324_9pops
+plink --bfile SeqApiPop_324_9pops \
+		--freq \
+		--missing \
+		--family \
+		--out SeqApiPop_324_9pops
 gzip SeqApiPop_324_9pops.frq.strat
 ```
+
+### Convert to TreeMix information
+
+plink2treemix.py script from: https://github.com/ekirving/ctvt/blob/master/plink2treemix.py
 
 ```bash
 sbatch --mem=8G --wrap="..plink2treemix.py SeqApiPop_324_9pops.frq.strat.gz SeqApiPop_324_9pops.frq.gz"
 ```
 
 ### Run Treemix
-
-For instance, in directory bootstrap90, for the 324 samples with > 90 % pure backgrounds
 
 launchTreemix.bash
 
@@ -180,7 +138,10 @@ for i in $(seq 0 9)
 do
     for j in $(seq 0 99)
     do
-        sbatch --wrap="treemix -i ../SeqApiPop_324_9pops.frq.gz -bootstrap -seed ${RANDOM} -k 500 -m ${i} -o outstemM${i}_rep${j}"
+        sbatch --wrap="treemix -i ../SeqApiPop_324_9pops.frq.gz -bootstrap -seed ${RANDOM} \
+					-k 500 \
+					-m ${i} \
+					-o outstemM${i}_rep${j}"
     done
 done
 ```
@@ -197,7 +158,7 @@ plot_optM(Bootstraps90.optm, method = "Evanno")
 ```R
 library(RColorBrewer)
 #library(R.utils) Curiosly, seems not to work when R.utils loaded
-plot_tree("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outstemM1_rep69")
+plot_tree("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps80/outstemM1_rep69")
 ```
 
 ### Done for all Treemix outputs:
@@ -217,7 +178,7 @@ library(RColorBrewer)
 #library(R.utils)
 source("../plotting_funcs.R")
 
-path = "~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/"
+path = "~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps80/"
 
 
 for (i in 0:9){
@@ -233,23 +194,26 @@ for (i in 0:9){
 ### Estimate mean trees:
 
 SumTrees: Phylogenetic Tree Summarization and Annotation, from the DendroPy plylogenetic package
+Sukumaran, J and MT Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571.
 
 sumtreeStats.bash
 
 ```bash
 #!/bin/bash
 
+module load system/Python-3.6.3
+
 for i in $(seq 0 9)
 do
-	rm -f /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outMeanM${i}.tre
-	touch /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outMeanM${i}.tre
-	for j in `ls /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outstemM${i}_rep*.treeout.gz`
+	rm -f ~/WindowSNPs/TreeMix/bootstraps80/outMeanM${i}.tre
+	touch ~/WindowSNPs/TreeMix/bootstraps80/outMeanM${i}.tre
+	for j in `ls  ~/WindowSNPs/TreeMix/bootstraps90/outstemM${i}_rep*.treeout.gz`
 	do
-	gunzip -c ${j} | head --l 1 >> /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outMeanM${i}.tre
+	gunzip -c ${j} | head --l 1 >> ~/WindowSNPs/TreeMix/bootstraps90/outMeanM${i}.tre
 	done
-	sumtrees.py /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/outMeanM${i}.tre \
-		> /work/project/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90/summaryM${i}.tre
+	sumtrees.py ~/WindowSNPs/TreeMix/bootstraps80/outMeanM${i}.tre \
+		> ~/WindowSNPs/TreeMix/bootstraps80/summaryM${i}.tre
 done
 ```
 
-Plot with figtree
+# Plot with figtree v1.4.4
