@@ -57,8 +57,8 @@ for i in  $(seq 1 16)
 do
 
 bcftools view  --regions ${i} \
-            --output-file ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_629_MAF001_diAllelic_plink_chr${i}.vcf.gz \
-            ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_629_MAF001_diAllelic_plink.vcf.gz
+        --output-file ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_629_MAF001_diAllelic_plink_chr${i}.vcf.gz \
+        ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_629_MAF001_diAllelic_plink.vcf.gz
 bcftools index SeqApiPop_629_MAF001_diAllelic_plink_chr${i}.vcf.gz
 done
 
@@ -185,9 +185,9 @@ module load bioinfo/bcftools-1.9
 #Select the 629 samples and filter on MAF001
 
 bcftools view  --samples-file ~/plinkAnalyses/WindowSNPs/RFMix/in/IndsReference.list \
-            --output-file ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_320_MAF001_diAllelic_phased_Ref.bcf \
-            --output-type b \
-            ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_629_MAF001_diAllelic_phased_All.vcf.gz
+        --output-file ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_320_MAF001_diAllelic_phased_Ref.bcf \
+        --output-type b \
+        ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_629_MAF001_diAllelic_phased_All.vcf.gz
 bcftools index SeqApiPop_320_MAF001_diAllelic_phased_Ref.bcf
 ```
 
@@ -201,12 +201,194 @@ bcftools index SeqApiPop_320_MAF001_diAllelic_phased_Ref.bcf
 module load bioinfo/bcftools-1.9
 
 bcftools view  --samples-file ~/plinkAnalyses/WindowSNPs/RFMix/in/IndsQuery.list \
-                --output-file ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_309_MAF001_diAllelic_phased_Query.bcf \
-                --output-type b \
-                ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_629_MAF001_diAllelic_phased_All.vcf.gz
+            --output-file ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_309_MAF001_diAllelic_phased_Query.bcf \
+            --output-type b \
+            ~/plinkAnalyses/WindowSNPs/RFMix/out/SeqApiPop_629_MAF001_diAllelic_phased_All.vcf.gz
 bcftools index SeqApiPop_309_MAF001_diAllelic_phased_Query.bcf
 ```
 
+## Make a genetic maps
+
+### Find crossing-overs in data from Liu et al., 2015
+
+Liu H, Zhang X, Huang J, Chen J-Q, Tian D, Hurst LD, et al. Causes and consequences of crossing-over evidenced via a high-resolution recombinational landscape of the honey bee. Genome Biol. 2015 Jan 1;16:15.
+
+Reads from the project SRP043350 (Liu et al., 2015) were retrieved from Short Read Archive (SRA) (https://www.ncbi.nlm.nih.gov/sra), aligned to the reference genome for SNP detection (GATK pipeline): vcf file LiuGenotypesSNPs2allelesForCoSearchDuplOK.vcf.gz
+
+The script find_crossing_overs.py was then used to detect crossing overs:
+
+* -l Colony*.list : list of samples in the Colony
+* -q SRR* : the colony's queen
+* -c 6 : number of crossing-overs allowed simultaneously over all individuals
+
+```bash
+sbatch --wrap="./find_crossing_overs.py \
+                -i combinedVcf/LiuGenotypesSNPs2allelesForCoSearchDuplOK.vcf.gz \
+                -l Colony1.list \
+                -q SRR1424586 \
+                -c 6 \
+                -e HAv3_1_Chromosomes.list \
+                -o _colo1"
+
+sbatch --wrap="./find_crossing_overs.py \
+                -i combinedVcf/LiuGenotypesSNPs2allelesForCoSearchDuplOK.vcf.gz \
+                -l Colony2.list \
+                -q SRR1425460 \
+                -c 6 \
+                -e HAv3_1_Chromosomes.list \
+                -o _colo2"
+
+sbatch --wrap="./find_crossing_overs.py \
+                -i combinedVcf/LiuGenotypesSNPs2allelesForCoSearchDuplOK.vcf.gz \
+                -l Colony3.list \
+                -q SRR1425476 \
+                -c 6 \
+                -e HAv3_1_Chromosomes.list \
+                -o _colo3"
+```
+
+Then a genetic map was constructed from the data:
+
+After importing the 3 files Colony3.list, make table with one line when multiple COs at one position and add column indicating the lines that are involved in double COs.
+
+* A double CO is due either to:
+  * A non-crossing-over event marked by a single SNP
+  * non-crossing-over events marked by more than one SNP will be detected by the distance to the previous and/or the next CO in the same individual. The distance is set here at 10 kb, as suggested by Liu, et al., 2015.
+  * A genotyping error (especially in the case of nb_COs = 1 or 2)
+  * nb_COs = number of ofspring from a colony, with COs at the same position
+  * Problems in the assembly, such as small inversions, especially in the case of nb_COs > 2)
+* Detection of double crossing-overs: two lines must be removed
+  * Line for the recombinant before the SNP : the previous and the next vectors are identical
+  * Line for the recombinant after the SNP : the current examined vector and the vectors two steps back are identical
+
+
+
+```python
+#!/usr/bin/env python3
+
+import pandas as pd
+import numpy as np
+import re
+import csv
+
+#Import data
+colo1 = pd.read_csv('~/MappingLiu/testCOs_intervals_v_colo1', sep = "\t")
+colo1['colony'] = 'Colony1'
+colo2 = pd.read_csv('~/MappingLiu/testCOs_intervals_v_colo2', sep = "\t")
+colo2['colony'] = 'Colony2'
+colo3 = pd.read_csv('~/MappingLiu/testCOs_intervals_v_colo3', sep = "\t")
+colo3['colony'] = 'Colony3'
+colos_all = pd.concat([colo1,colo2,colo3], axis=0)
+colos_all_indexed = colos_all.set_index(['chrom','pos_end_CO'])
+
+# Create a table for the detection of double COs.
+vectors_table = colos_all[['colony','chrom','event','pos_end_CO','nb_COs','vector']]
+vectors_table = vectors_table.astype({'vector': 'str'})
+vectors_table = vectors_table.sort_values(by=['colony','chrom','pos_end_CO'], ascending=[True,True,True])
+
+# There is one line per individual when multiple individual have a CO in the same interval. Keep only one.
+vectors_table = vectors_table.drop_duplicates()
+# Add columns with previous and next vectors for comparison
+vectors_table['prev_vector2'] =  vectors_table['vector'].shift(2, fill_value=0)
+vectors_table['prev_vector1'] =  vectors_table['vector'].shift(1, fill_value=0)
+vectors_table['next_vector'] =  vectors_table['vector'].shift(-1, fill_value=0)
+
+# New column to write results
+vectors_table['double_CO'] = "no"
+
+# Select lines corresponding to potential crossing-over events
+vectors_table_COs = vectors_table[vectors_table.event == 'crossing_over']
+vectors_table_COs = vectors_table_COs.reset_index()
+
+# Mark lines detected as being due to double COs
+vectors_table_COs.loc[(vectors_table_COs.prev_vector1 == vectors_table_COs.next_vector),'double_CO'] = "yes"
+vectors_table_COs.loc[(vectors_table_COs.prev_vector2 == vectors_table_COs.vector),'double_CO'] = "yes"
+
+# Join the table with the marked double_CO with the imported table
+vectors_table_COs_indexed = vectors_table_COs.set_index(['chrom','pos_end_CO'])
+vectors_table_COs_indexed = vectors_table_COs_indexed.drop(['colony','event','nb_COs', 'vector','index'], 
+                            axis=1)
+complete_table = colos_all_indexed.join(vectors_table_COs_indexed)
+complete_table = complete_table.reset_index()
+complete_table
+
+# Select potential CO events and the columns for visualisation
+COs_table = complete_table[complete_table.event == 'crossing_over']
+COs_table = COs_table[['chrom','name','pos_start_CO','pos_end_CO','interval','nb_COs',
+                        'dist_min_prev_CO','dist_min_next_CO',
+                        'dist_max_prev_CO','dist_max_next_CO','double_CO']]
+
+#Eliminate double COs detected by comparing the vectors and NCOs by removing COs at a distance < 10 kb
+genet_map = COs_table[(COs_table.dist_max_prev_CO > 10000) &
+                        (COs_table.dist_max_next_CO > 10000) &
+                        (COs_table.double_CO == 'no')]
+
+#Change genbank chromosome identifiers to numbers
+genet_map = genet_map[['chrom','pos_start_CO','pos_end_CO']]
+genet_map.columns = ['chrom','left','right']
+genet_map.loc[genet_map.chrom == 'NC_037638.1',"chrom"] = 1
+genet_map.loc[genet_map.chrom == 'NC_037639.1',"chrom"] = 2
+genet_map.loc[genet_map.chrom == 'NC_037640.1',"chrom"] = 3
+genet_map.loc[genet_map.chrom == 'NC_037641.1',"chrom"] = 4
+genet_map.loc[genet_map.chrom == 'NC_037642.1',"chrom"] = 5
+genet_map.loc[genet_map.chrom == 'NC_037643.1',"chrom"] = 6
+genet_map.loc[genet_map.chrom == 'NC_037644.1',"chrom"] = 7
+genet_map.loc[genet_map.chrom == 'NC_037645.1',"chrom"] = 8
+genet_map.loc[genet_map.chrom == 'NC_037646.1',"chrom"] = 9
+genet_map.loc[genet_map.chrom == 'NC_037647.1',"chrom"] = 10
+genet_map.loc[genet_map.chrom == 'NC_037648.1',"chrom"] = 11
+genet_map.loc[genet_map.chrom == 'NC_037649.1',"chrom"] = 12
+genet_map.loc[genet_map.chrom == 'NC_037650.1',"chrom"] = 13
+genet_map.loc[genet_map.chrom == 'NC_037651.1',"chrom"] = 14
+genet_map.loc[genet_map.chrom == 'NC_037652.1',"chrom"] = 15
+genet_map.loc[genet_map.chrom == 'NC_037653.1',"chrom"] = 16
+genet_map['marker'] = 'yes'
+genet_map.head()
+
+#add start chromosomes
+chromosomes = sorted(genet_map.chrom.unique().tolist())
+zeros = pd.DataFrame(chromosomes, columns = ['chrom'])
+zeros['left'] = 0
+zeros['right'] = 0
+zeros['marker'] = 'yes'
+genet_map = pd.concat([genet_map,zeros], axis=0)
+
+# add end of chromosomes
+lefts = ['27754200','16089512','13619445','13404451',
+         '13896941','17789102','14198698','12717210',
+         '12354651','12360052','16352600','11514234',
+         '11279722','10670842','9534514','7238532']
+ends = pd.DataFrame(list(zip(chromosomes,lefts)), columns = ['chrom','left'])
+ends['right'] = ends['left']
+ends['marker'] = 'no'
+ends = ends.astype({"left": int, "right": int})
+genet_map = pd.concat([genet_map,ends], axis=0)
+
+#Define marker positions: one before the first CO, one after the last CO and one between each CO
+genet_map = genet_map.sort_values(by=['chrom','left'])
+genet_map['next'] = genet_map.left.shift(-1)
+genet_map['marker_position'] = (genet_map['left'] + genet_map['next']) / 2
+#tried using df['left'], but sometimes, markers not in increasing order to to close proximity!
+
+#Define cM values
+marker_cM = list()
+cM_count = 0
+for idx, row in genet_map.iterrows():
+    marker_cM.append(cM_count / 43 * 100) # 43 offspring in the 3 colonies dataset
+    if row[3] == 'yes':
+        cM_count = cM_count + 1
+    elif row[3] == 'no':
+        cM_count = 0
+genet_map['marker_cM']  =   marker_cM
+
+genetic_map = genet_map[genet_map.marker == 'yes']
+genetic_map = genetic_map[['chrom','marker_position','marker_cM']]
+genetic_map = genetic_map.astype({'marker_position': 'int'})
+
+genetic_map.to_csv('~/plinkAnalyses/WindowSNPs/RFMix/in/GenetMap_march_2021_AV.txt', \
+                        index=False, header=False, sep="\t")
+
+```
 
 ## Run RFMix
 
