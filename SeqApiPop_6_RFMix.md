@@ -1,15 +1,35 @@
 # SeqApiPop analyses: RFMix
 
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
+- [Phasing with shapeit](#phasing-with-shapeit)
+	- [Select SNPs](#select-snps)
+	- [VCFs per chromosome](#vcfs-per-chromosome)
+	- [Phasing with Shapeit](#phasing-with-shapeit)
+		- [Phasing](#phasing)
+		- [convert phased genotypes back to vcf](#convert-phased-genotypes-back-to-vcf)
+		- [Concatenate VCFs](#concatenate-vcfs)
+- [RFMix](#rfmix)
+- [Select reference and query Samples](#select-reference-and-query-samples)
+	- [Make bcf files](#make-bcf-files)
+- [Make a genetic maps](#make-a-genetic-maps)
+	- [Find crossing-overs in data from Liu et al., 2015](#find-crossing-overs-in-data-from-liu-et-al-2015)
+- [Run RFMix](#run-rfmix)
+	- [Couldn't get chromosome 1 to work](#couldnt-get-chromosome-1-to-work)
+
+<!-- /TOC -->
 
 ## Phasing with shapeit
 
 ### Select SNPs
+
 * MAF > 1
 * Max alleles = 2
 * Chromosomes as numbers
 
+
 ```bash
+
 #!/bin/bash
 
 #makeVCF.bash
@@ -32,9 +52,12 @@ bcftools view  --samples-file ~/plinkAnalyses/WindowSNPs/RFMix/in/IndsAll629.lis
             --output-type z \
             ~/plinkAnalyses/MetaGenotypesCalled870_raw_snps_allfilter_plink.vcf
 bcftools index SeqApiPop_629_MAF001_diAllelic_plink.vcf.gz
+
 ```
 
 ### VCFs per chromosome
+
+
 * Shapeit requires one vcf per chromosome
 
 ```bash
@@ -66,6 +89,7 @@ done
 ```
 
 ### Phasing with Shapeit
+
 #### Phasing
 
 ```bash
@@ -86,7 +110,7 @@ done
 
 #### convert phased genotypes back to vcf
 
-```binbash
+```bash
 #!/bin/bash
 
 #convertToVcf.bash
@@ -162,8 +186,6 @@ rm SeqApiPop_629_MAF001_diAllelic_plink.vcf.gz*
 ## RFMix
 
 ## Select reference and query Samples
-
-### Make lists of samples: see Jupyter notebook "Treemix"
 
 Select from an Admixture Q matrix with K = 3 the individuals with > 0.95 pure backgrounds as reference => IndsReference.list
 The other samples => IndsQuery.list
@@ -440,6 +462,7 @@ The generation of internal simulation samples for estimating the Conditional Ran
 
 For the other chromosomes, the CRF values used by the software after the simulation were as follow:
 
+```
 Loading genetic map for chromosome 2 ...  done
 Maximum scoring weight is 53 (91.1)
 Loading genetic map for chromosome 3 ...  done
@@ -470,6 +493,7 @@ Loading genetic map for chromosome 15 ...  done
 Maximum scoring weight is 53 (93.5)
 Loading genetic map for chromosome 16 ...  done
 Maximum scoring weight is 49 (93.8)
+```
 
 These are not related to the chromosome size.
 The mean value is 48, so chromosome 1 was run with this fixed value.
