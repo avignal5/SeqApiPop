@@ -2,9 +2,6 @@
 
 
 
-
-
-
 ## Phasing with shapeit
 
 ### Select SNPs
@@ -306,7 +303,7 @@ vectors_table_COs.loc[(vectors_table_COs.prev_vector2 == vectors_table_COs.vecto
 
 # Join the table with the marked double_CO with the imported table
 vectors_table_COs_indexed = vectors_table_COs.set_index(['chrom','pos_end_CO'])
-vectors_table_COs_indexed = vectors_table_COs_indexed.drop(['colony','event','nb_COs', 'vector','index'], 
+vectors_table_COs_indexed = vectors_table_COs_indexed.drop(['colony','event','nb_COs', 'vector','index'],
                             axis=1)
 complete_table = colos_all_indexed.join(vectors_table_COs_indexed)
 complete_table = complete_table.reset_index()

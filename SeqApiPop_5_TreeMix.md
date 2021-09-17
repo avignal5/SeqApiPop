@@ -1,39 +1,23 @@
 # SeqApiPop analyses: Treemix
 
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [SeqApiPop analyses: Treemix](#seqapipop-analyses-treemix)
-	- [1. Files](#1-files)
-		- [Lists for selection:](#lists-for-selection)
-		- [All samples with > 80 pure backgrounds, plus Corsica:](#all-samples-with-80-pure-backgrounds-plus-corsica)
-			- [Added the samples admixed for populations that are close, such as iberica = iberica + mellifera](#added-the-samples-admixed-for-populations-that-are-close-such-as-iberica-iberica-mellifera)
-		- [All samples with > 90 pure backgrounds, plus Corsica:](#all-samples-with-90-pure-backgrounds-plus-corsica)
-			- [Added the samples admixed for populations that are close, such as iberica = iberica + mellifera](#added-the-samples-admixed-for-populations-that-are-close-such-as-iberica-iberica-mellifera)
-		- [Select samples](#select-samples)
-- [! /bin/bash](#-binbash)
-- [! /bin/bash](#-binbash)
-		- [Calculate frequencies and format for TreeMix](#calculate-frequencies-and-format-for-treemix)
-- [! /bin/bash](#-binbash)
-		- [Run Treemix](#run-treemix)
-- [!/bin/bash](#binbash)
-		- [Estimate the number of migrations with R package OptM](#estimate-the-number-of-migrations-with-r-package-optm)
-		- [Plot Treemix trees](#plot-treemix-trees)
-- [library(R.utils) Curiosly, seems not to work when R.utils loaded](#libraryrutils-curiosly-seems-not-to-work-when-rutils-loaded)
-		- [Done for all Treemix outputs:](#done-for-all-treemix-outputs)
-- [!/bin/bash](#binbash)
-- [plotTrees.bash](#plottreesbash)
-- [plotAll.R](#plotallr)
-- [library(R.utils)](#libraryrutils)
-		- [Estimate mean trees:](#estimate-mean-trees)
-- [!/bin/bash](#binbash)
-	- [Phylogenetic tree with individuals](#phylogenetic-tree-with-individuals)
-		- [Convert to R-readeable data1](#convert-to-r-readeable-data1)
-- [!/bin/bash](#binbash)
-- [recodeForR.bash](#recodeforrbash)
-		- [Import in R and analyses](#import-in-r-and-analyses)
-- [plot.phylo(SeqApiPopTree, typ="fan", cex=0.7) #Type: one of "phylogram" (the default), "cladogram", "fan", "unrooted", "radial"](#plotphyloseqapipoptree-typfan-cex07-type-one-of-phylogram-the-default-cladogram-fan-unrooted-radial)
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [1. Files](#1-files)
+	- [Lists for selection:](#lists-for-selection)
+	- [All samples with > 80 pure backgrounds, plus Corsica:](#all-samples-with-80-pure-backgrounds-plus-corsica)
+	- [Select samples](#select-samples)
+	- [Calculate frequencies and format for TreeMix](#calculate-frequencies-and-format-for-treemix)
+	- [Convert to TreeMix information](#convert-to-treemix-information)
+- [Run Treemix](#run-treemix)
+- [Estimate the number of migrations with R package OptM](#estimate-the-number-of-migrations-with-r-package-optm)
+- [Plot Treemix trees](#plot-treemix-trees)
+	- [Done for all Treemix outputs:](#done-for-all-treemix-outputs)
+	- [Estimate mean trees:](#estimate-mean-trees)
+		- [Plot with figtree v1.4.4](#plot-with-figtree-v144)
 
 <!-- /TOC -->
+
 
 ## 1. Files
 
@@ -79,6 +63,7 @@ Caucasia    |  19
 selectRefPopInds90.bash
 
 * All SNPs
+
 ```bash
 #! /bin/bash
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
@@ -89,6 +74,8 @@ plink --bfile ../SeqApiPop_629 \
 ```
 
 * SNPs selected on MAF and LD
+
+
 ```bash
 #! /bin/bash
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
@@ -125,7 +112,7 @@ plink2treemix.py script from: https://github.com/ekirving/ctvt/blob/master/plink
 sbatch --mem=8G --wrap="..plink2treemix.py SeqApiPop_324_9pops.frq.strat.gz SeqApiPop_324_9pops.frq.gz"
 ```
 
-### Run Treemix
+## Run Treemix
 
 launchTreemix.bash
 
@@ -146,7 +133,7 @@ do
 done
 ```
 
-### Estimate the number of migrations with R package OptM
+## Estimate the number of migrations with R package OptM
 
 ```R
 Bootstraps90.optm = optM("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90")
@@ -154,7 +141,7 @@ Bootstraps90.optm = optM("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90")
 plot_optM(Bootstraps90.optm, method = "Evanno")
 ```
 
-### Plot Treemix trees
+## Plot Treemix trees
 ```R
 library(RColorBrewer)
 #library(R.utils) Curiosly, seems not to work when R.utils loaded
@@ -216,4 +203,4 @@ do
 done
 ```
 
-# Plot with figtree v1.4.4
+#### Plot with figtree v1.4.4

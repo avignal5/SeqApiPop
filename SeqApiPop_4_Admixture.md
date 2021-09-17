@@ -1,5 +1,17 @@
 # SeqApiPop analyses: admixture
 
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Admixture runs](#admixture-runs)
+- [Obtain the CV values for plotting:](#obtain-the-cv-values-for-plotting)
+- [Collect and rename all Q matrix Files, for Pong analysis](#collect-and-rename-all-q-matrix-files-for-pong-analysis)
+- [Pong analysis: on PC/MAC](#pong-analysis-on-pcmac)
+	- [From Admixture Qfiles to Pong format](#from-admixture-qfiles-to-pong-format)
+
+<!-- /TOC -->
+
+
+## Admixture runs
 
 Following the MAF and LD pruning analysis, the 601,945 SNPs from the plink files SeqApiPop_629_maf001_LD03_pruned.* were used for the Admixture analysis.
 

@@ -1,7 +1,5 @@
 # SeqApiPop analyses: filtering on LD and PCA
 
-The corresponding html document and scripts are also found in [Github](https://github.com/avignal5/SeqApiPop)
-
 
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
