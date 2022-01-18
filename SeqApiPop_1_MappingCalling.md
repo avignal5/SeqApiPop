@@ -5,8 +5,6 @@ The corresponding html document and scripts are also found in [Github](https://g
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [1. Introduction](#1-introduction)
-- [](#)
-- [2. Estimating mapped sequencing depth in BAM files](#2-estimating-mapped-sequencing-depth-in-bam-files)
 - [2. From fastq files to gvcf files](#2-from-fastq-files-to-gvcf-files)
 	- [2.1. Reference genome](#21-reference-genome)
 	- [2.2. fastq files](#22-fastq-files)
@@ -77,7 +75,6 @@ Versions of the software used:
 ```bash
 more program_module
 #%Module1.0###############################################################
-##
 
 module load bioinfo/bwa-0.7.15
 module load bioinfo/samtools-1.8
@@ -91,101 +88,6 @@ module load bioinfo/plink-v1.90b5.3
 module load system/Python-3.6.3
 module load system/Java8
 module load system/R-3.4.3
-```
-
-## 2. Estimating mapped sequencing depth in BAM files
-
-* The sequencing depth for all SeqApiPop samples was estimated with the Mosdepth software
-* AllSeqApiPopBams.list is a list of paths to the bam files
-
-
-```{bash}
-#!/bin/bash
-
-#DepthMosDepthSeqApiPop.bash
-
-for i in `cat  ~/seqapipopOnHAV3_1/sequencingDepth/AllSeqApiPopBams.list`
-do
-        IFS='/' read -ra ARR1 <<< "$i"
-        SAMPLE=${ARR1[8]}
-        IFS="_" read -ra ARR2 <<< ${SAMPLE}
-        NAME=${ARR2[0]}
-        sbatch -J Depth --mem=2G --wrap="source /home/gencel/vignal/.bashrc;
-                conda activate seqDepth;
-                mosdepth -n  ${NAME} ${i};
-                conda deactivate"
-done
-```
-
-* for each bam, results are in a file BamName.mosdepth.summary.txt
-* results were then aggregated. Two output files:
-
-**allSummariesSeqApiPop.txt:**
-* With Sample name, chromosome name, chromosome length, bases mapped, mean depth, minimum depth, maximum depth
-
-|name   | chrom  | length | bases |  mean |   min  |   max|
-|:---|---:|---:|---:|---:|---:|---:|
-|BS16-19-M2  |    NC_037638.1  |   27754200    |    891809856    |   32.13 |  0   |    338224|
-|BS16-19-M2  |    NC_037639.1  |   16089512    |    522408492    |   32.47 |  0   |    1864|
-|BS16-19-M2  |    NC_037640.1  |   13619445    |    430268749    |   31.59 |  0   |    1481|
-|BS16-19-M2  |    NC_037641.1  |   13404451    |    417610967    |   31.15 |  0   |    8049|
-...
-
-
-**allSummariesSeqApiPop.txt:**
-* With Sample name, mean chromosome (autosome) depth, mitochondrial DNA depth, mitochondrial / autosomal depths ratios.
-
-|name  |  chrDepth    |    beeMitoDepth  |  beeMitoratio|
-:---|---:|---:|---:|
-|BS16-19-M2   |   31.29625    |    4500.92 | 143.8165914446619|
-|BS16-198-M1  |   33.228125   |    18661.06    |    561.6043637731591|
-|ITA7A |  17.368125   |    4261.76 | 245.37824318975137|
-|Sar21 |  19.418125   |    3597.02 | 185.24033602626412|
-|NCA35 |  12.55125    |    4693.06 | 373.91176177671554|
-...
-
-
-```{python3}
-#!/usr/bin/env python3
-# _*_ coding: Utf-8 _*_
-# coding: utf-8
-
-#aggregateSummariesSeqApiPop.py
-
-import re
-import glob
-import csv
-
-outFile = open("~/seqapipopOnHAV3_1/sequencingDepth/allSummariesSeqApiPop.txt",'w')
-outFile2 = open("~/seqapipopOnHAV3_1/sequencingDepth/compareDepthsSeqApiPop.txt",'w')
-
-titles = ["name","chrom", "length", "bases", "mean", "min", "max"]
-print("\t".join(titles), file=outFile)
-titles2 = ["name","chrDepth", "beeMitoDepth", "beeMitoratio"]
-print("\t".join(titles2), file=outFile2)
-
-for i in glob.glob("/work/project/cytogen/Alain/seqapipopOnHAV3_1/sequencingDepth/*summary*"):
-	pathArray = re.split("/",i)
-	nameLong = pathArray[7]
-	nameArray = re.split("\.",nameLong)
-	name = nameArray[0]
-	with open(i) as csvFile:
-		data=csv.reader(csvFile, delimiter = "\t")
-		sumDepths = 0
-		for row in data:
-			if re.search('^NC',row[0]):
-				out = [name, row[0],row[1], row[2], row[3], row[4],row[5]]
-				print("\t".join(out), file=outFile)
-				if row[0] == "NC_001566.1":
-					beeMitoDepth = float(row[3])
-					#print("BeeMito")
-				else:
-					sumDepths = sumDepths + float(row[3])
-					#print("Chr")
-		chrAverage = sumDepths / 16
-		out2 = [name,str(chrAverage),str(beeMitoDepth),str(beeMitoDepth / chrAverage)]
-		print("\t".join(out2), file=outFile2)
-
 ```
 
 ## 2. From fastq files to gvcf files
