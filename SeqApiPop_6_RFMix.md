@@ -21,6 +21,8 @@
 
 Added line for github test
 
+Delete this one ?
+
 ## Phasing with shapeit
 
 ### Select SNPs
