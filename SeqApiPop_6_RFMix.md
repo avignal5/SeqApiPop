@@ -19,6 +19,8 @@
 
 <!-- /TOC -->
 
+Added line for github test
+
 ## Phasing with shapeit
 
 ### Select SNPs
