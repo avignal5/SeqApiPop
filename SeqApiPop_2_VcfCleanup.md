@@ -324,6 +324,7 @@ SCRIPTS='~/seqapipopOnHAV3_1/vcf_cleanup_scripts' #path to scripts
 DIRIN='~/combineGVCFs/The870vcf' #path to directory containing the input vcf
 DIROUT='~/seqapipopOnHAV3_1/vcf_cleanup' #path to output directory
 VCFIN='MetaGenotypesCalled870_raw_snps.vcf.gz' #inputvcf before filters
+limit_allele=3
 limit_FS=61
 limit_SOR=4
 limit_MQ=39
