@@ -196,7 +196,7 @@ do
 	touch ~/WindowSNPs/TreeMix/bootstraps80/outMeanM${i}.tre
 	for j in `ls  ~/WindowSNPs/TreeMix/bootstraps90/outstemM${i}_rep*.treeout.gz`
 	do
-	gunzip -c ${j} | head --l 1 >> ~/WindowSNPs/TreeMix/bootstraps90/outMeanM${i}.tre
+	gunzip -c ${j} | head --l 1 >> ~/WindowSNPs/TreeMix/bootstraps80/outMeanM${i}.tre
 	done
 	sumtrees.py ~/WindowSNPs/TreeMix/bootstraps80/outMeanM${i}.tre \
 		> ~/WindowSNPs/TreeMix/bootstraps80/summaryM${i}.tre
