@@ -137,7 +137,7 @@ done
 ## Estimate the number of migrations with R package OptM
 
 ```R
-Bootstraps90.optm = optM("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps80")
+Bootstraps80.optm = optM("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps80")
 
 plot_optM(Bootstraps80.optm, method = "Evanno")
 ```
