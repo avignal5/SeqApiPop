@@ -68,8 +68,8 @@ selectRefPopInds90.bash
 #! /bin/bash
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
 plink --bfile ../SeqApiPop_629 \
-		--out SeqApiPop_324_9pops_AllSNPs \
-		--keep SeqApiPop_324_9pops.list \
+		--out SeqApiPop_390_9pops_AllSNPs \
+		--keep SeqApiPop_390_9pops.list \
 		--make-bed
 ```
 
@@ -80,8 +80,8 @@ plink --bfile ../SeqApiPop_629 \
 #! /bin/bash
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
 plink --bfile ../SeqApiPop_629_maf001_LD03_pruned \
-		--out SeqApiPop_324_9pops \
-		--keep SeqApiPop_324_9pops.list \
+		--out SeqApiPop_390_9pops \
+		--keep SeqApiPop_390_9pops.list \
 		--make-bed
 ```
 
@@ -96,20 +96,21 @@ calculateFrequencies.bash
 
 module load -f /work/project/cytogen/Alain/seqapipopOnHAV3_AV/program_module
 
-plink --bfile SeqApiPop_324_9pops \
+plink --bfile SeqApiPop_390_9pops \
 		--freq \
 		--missing \
 		--family \
-		--out SeqApiPop_324_9pops
+		--out SeqApiPop_390_9pops
 gzip SeqApiPop_324_9pops.frq.strat
 ```
 
 ### Convert to TreeMix information
 
-plink2treemix.py script from: https://github.com/ekirving/ctvt/blob/master/plink2treemix.py
+* plink2treemix.py script from: https://github.com/ekirving/ctvt/blob/master/plink2treemix.py
+* Made a version for Python3: plink2treemixPython3.py
 
 ```bash
-sbatch --mem=8G --wrap="..plink2treemix.py SeqApiPop_324_9pops.frq.strat.gz SeqApiPop_324_9pops.frq.gz"
+sbatch --mem=8G --wrap="..plink2treemixPython3.py SeqApiPop_390_9pops.frq.strat.gz SeqApiPop_390_9pops.frq.gz"
 ```
 
 ## Run Treemix
@@ -125,7 +126,7 @@ for i in $(seq 0 9)
 do
     for j in $(seq 0 99)
     do
-        sbatch --wrap="treemix -i ../SeqApiPop_324_9pops.frq.gz -bootstrap -seed ${RANDOM} \
+        sbatch --wrap="treemix -i ../SeqApiPop_390_9pops.frq.gz -bootstrap -seed ${RANDOM} \
 					-k 500 \
 					-m ${i} \
 					-o outstemM${i}_rep${j}"
@@ -136,9 +137,9 @@ done
 ## Estimate the number of migrations with R package OptM
 
 ```R
-Bootstraps90.optm = optM("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps90")
+Bootstraps90.optm = optM("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps80")
 
-plot_optM(Bootstraps90.optm, method = "Evanno")
+plot_optM(Bootstraps80.optm, method = "Evanno")
 ```
 
 ## Plot Treemix trees
