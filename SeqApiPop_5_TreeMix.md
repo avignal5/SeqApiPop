@@ -135,7 +135,8 @@ done
 ```
 
 ## Estimate the number of migrations with R package OptM
-
+* All .llik output files for all the runs in a directory: ~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps80
+* Then run the OptM command
 ```R
 Bootstraps80.optm = optM("~/plinkAnalyses/WindowSNPs/TreeMix/bootstraps80")
 
