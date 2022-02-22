@@ -175,9 +175,9 @@ Carnica France  |*Apis mellifera carnica*
 Carnica Poland  |*Apis mellifera carnica*
 Caucasica  |  *Apis mellifera caucasica*
 
-![](SeqApiPop_3_LDfilterAndPCAs.assets/All7millionSNPs.png)
+![](SeqApiPop_3_LDfilterAndPCAs.assets/All7millionSNPs2.png)
 **Principal component analysis for all SNPs: reference populations.**
-The first component representing 47.4 % of the variance separates clearly the A. m. mellifera and A. m. iberica on one side and the A. m. ligustica, A. m. carnica and A. m. caucasica on the other. The second component representing 13.8 % of the variance distinguishes the A. m. caucasica from the rest. The other dimensions represent each 5.2 % or less of the variance (see table below) and the separation of other populations or groups of populations on these subsequent principal component dimensions is not clear (data not shown)
+The first component representing 10.8 % of the variance separates clearly the A. m. mellifera and A. m. iberica on one side and the A. m. ligustica, A. m. carnica and A. m. caucasica on the other. The second component representing 3.1 % of the variance distinguishes the A. m. caucasica from the rest. The other dimensions represent each 5.2 % or less of the variance (see table below) and the separation of other populations or groups of populations on these subsequent principal component dimensions is not clear (data not shown)
 
 -----------------------
 
