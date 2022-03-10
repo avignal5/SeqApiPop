@@ -1,7 +1,5 @@
 # SeqApiPop analyses: filter vcf file
 
-The corresponding html document and scripts are also found in [Github](https://github.com/avignal5/SeqApiPop)
-
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [1. introduction](#1-introduction)
