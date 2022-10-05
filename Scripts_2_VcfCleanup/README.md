@@ -4,12 +4,14 @@ Wragg, D., Eynard, S. E., Basso, B., Canale-Tabet, K., Labarthe, E., Bouchez, O.
 
 For an updated version, see https://github.com/seynard/vcf_cleanup
 
+
+## R packages required
 The scripts will work on a slurm cluster. In theory, they will install the required R packages if missing, but this will not always work, according to the version of R used (see module load in the run_vcfcleanup_3.sh script). The best is to install the required packages ('data.table','VennDiagram','reshape2','RColorBrewer','grDevices','ggplot2','viridis') before running the script.
 
 ## To edit in run_vcfcleanup_3.sh :
-run='diagnostic'
+* run='diagnostic'
 Will only make the plots
-run='filter_all'
+* run='filter_all'
 Will produce a vcf file once all filters are passed
-run='filter_sequential'
+* run='filter_sequential'
 Will produce a vcf file at each filtering stage (not usually useful)
