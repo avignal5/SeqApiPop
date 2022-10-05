@@ -19,6 +19,6 @@ Will produce a vcf file at each filtering stage (not usually useful)
 oui oui les ~ entre gorupes et _ intra groupe
 ## Grouping the filters
 * in:
-- kept_above_threshold="MQ_QUAL_QD ~GQ~GQ"
-- kept_below_threshold="FS_SOR_allele ~miss_het ~GQfiltered"
+  - kept_above_threshold="MQ_QUAL_QD ~GQ ~GQ"
+  - kept_below_threshold="FS_SOR_allele ~miss_het ~GQfiltered"
 * Filter joined by a _ are done together. Groups of filters are separated by ~
