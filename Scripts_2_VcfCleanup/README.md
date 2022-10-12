@@ -16,7 +16,7 @@ Will produce a vcf file once all filters are passed
 * run='filter_sequential'
 Will produce a vcf file at each filtering stage (not usually useful)
 
-oui oui les ~ entre gorupes et _ intra groupe
+
 ## Grouping the filters
 * in:
   - kept_above_threshold="MQ_QUAL_QD ~GQ ~GQ"
