@@ -5,7 +5,7 @@
 N=1
 PLOIDY=2
 
-#Sometimes, the scripts stop before the merging of the pre-chromosome bootstraped bam files
+#Sometimes, the mapping scripts stop before the merging of the per-chromosome bootstraped bam files
 #This script will call the script that does the merging, sorting and calling => *.g.vcf files
 #The lines in the file samples_list are paths to the directories containing the mapping, etc directories
 
